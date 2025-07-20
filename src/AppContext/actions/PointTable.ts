@@ -1,0 +1,17 @@
+export const PointTable = {
+	GaldinsLosePerPlayer: -2,
+	MazaZoleWinPerPlayer: 6,
+	MazaZoleLossPerPlayer: -7,
+	LielaisWin: 1,
+	LielaisWinJanos: 2,
+	LielaisWinBezstiki: 3,
+	LielaisLost: -2,
+	LielaisLostJanos: -3,
+	LielaisLostBezstiki: -4,
+	ZoleWin: 5,
+	ZoleWinJanos: 6,
+	ZoleWinBezstiki: 7,
+	ZoleLost: -6,
+	ZoleLostJanos: -7,
+	ZoleLostBezstiki: -8,
+};
