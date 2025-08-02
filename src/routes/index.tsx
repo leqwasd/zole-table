@@ -3,10 +3,11 @@ import { FC } from "react";
 
 const Index: FC = () => {
 	return (
-		// <SetupPage />
 		<div className="p-2">
 			<h3>Welcome Home!</h3>
-			<Link to="/setup">New Game</Link>
+			<Link to="/setup/{-$data}" params={{ data: undefined }}>
+				New Game
+			</Link>
 		</div>
 	);
 };
