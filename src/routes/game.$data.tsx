@@ -17,6 +17,107 @@ import {
 } from "../types";
 import { FlexLayout } from "../Pages/Components/FlexLayout";
 
+// Button Components
+const ActionButton: FC<{
+	onClick: () => void;
+	variant: "red" | "purple" | "green";
+	children: React.ReactNode;
+}> = ({ onClick, variant, children }) => {
+	const variantClasses = {
+		red: "hover:bg-red-500/30 text-red-100 border-red-400 hover:border-red-300",
+		purple: "hover:bg-purple-500/30 text-purple-100 border-purple-400 hover:border-purple-300",
+		green: "hover:bg-green-500/30 text-green-100 border-green-400 hover:border-green-300",
+	};
+
+	return (
+		<button
+			type="button"
+			className={`bg-transparent hover:text-white py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300 shadow-md hover:shadow-lg border-2 ${variantClasses[variant]}`}
+			onClick={onClick}
+		>
+			{children}
+		</button>
+	);
+};
+
+const ResultButton: FC<{
+	onClick: () => void;
+	variant: "win" | "lose";
+	children: React.ReactNode;
+	className?: string;
+}> = ({ onClick, variant, children, className = "" }) => {
+	const variantClasses = {
+		win: "bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800",
+		lose: "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800",
+	};
+
+	return (
+		<button
+			type="button"
+			className={`${variantClasses[variant]} text-white py-2 px-4 rounded-lg font-medium text-sm transition-all duration-300 shadow-md hover:shadow-lg ${className}`}
+			onClick={onClick}
+		>
+			{children}
+		</button>
+	);
+};
+
+// Game Type Display Component
+const GameTypeDisplay: FC<{
+	gameType: GameTypeEnum;
+	size?: "sm" | "md";
+	showBackground?: boolean;
+}> = ({ gameType, size = "sm", showBackground = false }) => {
+	const getColorClass = () => {
+		switch (gameType) {
+			case GameTypeEnum.Galdins:
+				return "text-red-400";
+			case GameTypeEnum.MazaZole:
+				return "text-red-400";
+			case GameTypeEnum.Zole:
+				return "text-green-400";
+			case GameTypeEnum.Lielais:
+				return "text-purple-400";
+			default:
+				return "text-white";
+		}
+	};
+
+	const getGameTypeName = () => {
+		switch (gameType) {
+			case GameTypeEnum.Galdins:
+				return "Galdiņš";
+			case GameTypeEnum.MazaZole:
+				return "Mazā zole";
+			case GameTypeEnum.Zole:
+				return "Zole";
+			case GameTypeEnum.Lielais:
+				return "Lielais";
+			default:
+				return "";
+		}
+	};
+
+	const sizeClasses = size === "md" ? "font-medium" : "";
+	const backgroundClasses = showBackground
+		? "text-emerald-200 font-medium mb-2"
+		: "";
+
+	if (showBackground) {
+		return (
+			<div className={backgroundClasses}>
+				<span className={getColorClass()}>{getGameTypeName()}</span>
+			</div>
+		);
+	}
+
+	return (
+		<span className={`${getColorClass()} ${sizeClasses}`}>
+			{getGameTypeName()}
+		</span>
+	);
+};
+
 const GameContext = createContext({} as GameContext);
 type GameContext = {
 	state: Required<GameState>;
@@ -284,45 +385,63 @@ export const PlayedGames: FC<{ games: GameWithScore[]; players: string[] }> = ({
 		[games, players.length],
 	);
 	return (
-		<table className="w-full">
-			<thead>
-				<tr>
-					<td />
-					{players.map((name, i) => (
-						<th key={i}>{name}</th>
-					))}
-					<td />
-				</tr>
-			</thead>
-			<tbody>
-				{games.map((game, i) => (
-					<tr
-						key={i}
-						className={
-							i % players.length === players.length - 1
-								? "border-b-white/30 border-b "
-								: "border-b-transparent border-b"
-						}
-					>
-						<td>{i + 1}</td>
-						{players.map((_, j) => (
-							<GameCell key={j} player={j} game={game} />
+		<div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-sm rounded-lg p-4 mb-4 shadow-lg border border-white/20">
+			<table className="w-full text-white">
+				<thead>
+					<tr className="border-b border-emerald-400/30">
+						<td className="pb-2 text-sm text-emerald-200">#</td>
+						{players.map((name, i) => (
+							<th
+								key={i}
+								className="pb-2 text-center font-semibold text-emerald-100"
+							>
+								{name}
+							</th>
 						))}
-						<td>
-							<GameTypeName gameType={game.game[0]} />
-						</td>
+						<td className="pb-2" />
 					</tr>
-				))}
-			</tbody>
-			<tfoot>
-				<tr>
-					<td>Σ</td>
-					{totals.map((total, i) => (
-						<th key={i}>{total}</th>
+				</thead>
+				<tbody>
+					{games.map((game, i) => (
+						<tr
+							key={i}
+							className={
+								i % players.length === players.length - 1
+									? "border-b border-emerald-400/20"
+									: ""
+							}
+						>
+							<td className="py-1 text-sm text-emerald-300">
+								{i + 1}
+							</td>
+							{players.map((_, j) => (
+								<GameCell key={j} player={j} game={game} />
+							))}
+							<td className="py-1 text-center text-emerald-200 text-sm">
+								<GameTypeDisplay
+									gameType={game.game[0]}
+									size="sm"
+								/>
+							</td>
+						</tr>
 					))}
-				</tr>
-			</tfoot>
-		</table>
+				</tbody>
+				<tfoot>
+					<tr className="border-t border-emerald-400/30">
+						<td className="pt-2 font-bold text-emerald-100">Σ</td>
+						{totals.map((total, i) => (
+							<th
+								key={i}
+								className="pt-2 text-center font-bold text-emerald-100 text-lg"
+							>
+								{total}
+							</th>
+						))}
+						<td className="pt-2" />
+					</tr>
+				</tfoot>
+			</table>
+		</div>
 	);
 };
 
@@ -332,7 +451,7 @@ function useGameResultClassName(
 ): string {
 	const { game } = gameWithScore;
 	if (
-		(game[0] === GameTypeEnum.Lielais || game[1] === GameTypeEnum.Zole) &&
+		(game[0] === GameTypeEnum.Lielais || game[0] === GameTypeEnum.Zole) &&
 		game[1] === player
 	) {
 		if (
@@ -340,23 +459,18 @@ function useGameResultClassName(
 			game[2] === ZoleWinResult.win91 ||
 			game[2] === ZoleWinResult.winAll
 		) {
-			const className = "bg-green-500/50";
-			return className;
+			return "bg-green-500/30 border border-green-400/50";
 		} else {
-			const className = "bg-red-500/50";
-			return className;
+			return "bg-red-500/30 border border-red-400/50";
 		}
 	} else if (game[0] === GameTypeEnum.MazaZole && game[1] === player) {
 		if (game[2]) {
-			const className = "bg-green-500/50";
-			return className;
+			return "bg-green-500/30 border border-green-400/50";
 		} else {
-			const className = "bg-red-500/50";
-			return className;
+			return "bg-red-500/30 border border-red-400/50";
 		}
 	} else if (game[0] === GameTypeEnum.Galdins && game[1] === player) {
-		const className = "bg-red-500/50";
-		return className;
+		return "bg-red-500/30 border border-red-400/50";
 	}
 
 	return "";
@@ -367,14 +481,17 @@ const GameCell: FC<{ player: number; game: GameWithScore }> = ({
 }) => {
 	const gameResultClassName = useGameResultClassName(player, game);
 	return (
-		<td className={"text-center " + gameResultClassName}>
-			{game.scores[player]} <Diff diff={game.diff[player]} />
+		<td className={"text-center py-1 " + gameResultClassName}>
+			<span className="font-semibold text-white">
+				{game.scores[player]}
+			</span>{" "}
+			<Diff diff={game.diff[player]} />
 		</td>
 	);
 };
 
 const Diff: FC<{ diff: number }> = ({ diff }) => (
-	<span className="font-light">
+	<span className="text-xs text-emerald-200 font-light">
 		({diff > 0 && "+"}
 		{diff})
 	</span>
@@ -385,24 +502,35 @@ const GamePage: FC = () => {
 	const currentDealer =
 		(state.dealer + state.games.length) % state.players.length;
 	return (
-		<div>
-			<PlayedGames games={gamesWithScore} players={state.players} />
-			<FlexLayout>
-				{state.players.map((player, index) => (
-					<CurrentGamePlayer
-						key={index}
-						player={player}
-						index={index}
-						dealer={currentDealer}
-						playerCount={state.players.length}
-						preGameActions={state.preGameActions}
-						gameType={state.gameType}
-					/>
-				))}
-			</FlexLayout>
-			{state.gameType != null && (
-				<GameResults gameType={state.gameType} />
-			)}
+		<div className="min-h-screen bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-4 relative overflow-hidden">
+			{/* Background decorative elements */}
+			<div className="absolute inset-0 bg-gradient-to-t from-emerald-800/20 to-transparent"></div>
+			<div className="absolute top-1/4 -right-40 w-80 h-80 bg-emerald-400/8 rounded-full blur-3xl"></div>
+			<div className="absolute bottom-1/3 -left-40 w-96 h-96 bg-teal-400/8 rounded-full blur-3xl"></div>
+			<div className="absolute top-2/3 right-1/4 w-64 h-64 bg-emerald-300/6 rounded-full blur-2xl"></div>
+
+			<div className="max-w-6xl mx-auto relative z-10">
+				<h1 className="text-2xl font-bold text-white mb-4 text-center drop-shadow-lg">
+					Zole Calculator
+				</h1>
+				<PlayedGames games={gamesWithScore} players={state.players} />
+				<FlexLayout className="gap-3 mb-4">
+					{state.players.map((player, index) => (
+						<CurrentGamePlayer
+							key={index}
+							player={player}
+							index={index}
+							dealer={currentDealer}
+							playerCount={state.players.length}
+							preGameActions={state.preGameActions}
+							gameType={state.gameType}
+						/>
+					))}
+				</FlexLayout>
+				{state.gameType != null && (
+					<GameResults gameType={state.gameType} />
+				)}
+			</div>
 		</div>
 	);
 };
@@ -416,58 +544,69 @@ const GameResults: FC<{ gameType: GameType }> = ({ gameType }) => {
 	}
 
 	return (
-		<div className="flex">
-			<div className="flex-1 flex flex-col">
-				<button
-					type="button"
-					onClick={() =>
-						gameResultLielais(gameType, ZoleWinResult.win61)
-					}
-				>
-					Uzvar ar 61 - 90 acīm
-				</button>
-				<button
-					type="button"
-					onClick={() =>
-						gameResultLielais(gameType, ZoleWinResult.win91)
-					}
-				>
-					Uzvar ar 91 vai vairāk acīm
-				</button>
-				<button
-					type="button"
-					onClick={() =>
-						gameResultLielais(gameType, ZoleWinResult.winAll)
-					}
-				>
-					Uzvar iegūstot visus stiķus
-				</button>
-			</div>
-			<div className="flex-1 flex flex-col">
-				<button
-					type="button"
-					onClick={() =>
-						gameResultLielais(gameType, ZoleLoseResult.lost30)
-					}
-				>
-					Zaudē ar 30 un mazāk acīm
-				</button>
-				<button
-					type="button"
-					onClick={() =>
-						gameResultLielais(gameType, ZoleLoseResult.lost60)
-					}
-				>
-					Zaudē ar 31 - 60 acīm
-				</button>
-				<button
-					type="button"
-					onClick={() =>
-						gameResultLielais(gameType, ZoleLoseResult.lostAll)
-					}
-				>
-					Zaudē neiegūstot nevienu stiķi
-				</button>
+		<div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-sm rounded-lg p-4 shadow-lg border border-white/20">
+			<h3 className="text-lg font-semibold text-white mb-3 text-center">
+				Spēles rezultāts
+			</h3>
+			<div className="flex gap-3">
+				<div className="flex-1 flex flex-col gap-2">
+					<h4 className="text-emerald-200 font-medium text-sm text-center mb-1">
+						Uzvarējis
+					</h4>
+					<ResultButton
+						variant="win"
+						onClick={() =>
+							gameResultLielais(gameType, ZoleWinResult.win61)
+						}
+					>
+						61 - 90 acīs
+					</ResultButton>
+					<ResultButton
+						variant="win"
+						onClick={() =>
+							gameResultLielais(gameType, ZoleWinResult.win91)
+						}
+					>
+						91+ acīs
+					</ResultButton>
+					<ResultButton
+						variant="win"
+						onClick={() =>
+							gameResultLielais(gameType, ZoleWinResult.winAll)
+						}
+					>
+						Visi stiķi
+					</ResultButton>
+				</div>
+				<div className="flex-1 flex flex-col gap-2">
+					<h4 className="text-emerald-200 font-medium text-sm text-center mb-1">
+						Zaudējis
+					</h4>
+					<ResultButton
+						variant="lose"
+						onClick={() =>
+							gameResultLielais(gameType, ZoleLoseResult.lost30)
+						}
+					>
+						≤30 acīs
+					</ResultButton>
+					<ResultButton
+						variant="lose"
+						onClick={() =>
+							gameResultLielais(gameType, ZoleLoseResult.lost60)
+						}
+					>
+						31 - 60 acīs
+					</ResultButton>
+					<ResultButton
+						variant="lose"
+						onClick={() =>
+							gameResultLielais(gameType, ZoleLoseResult.lostAll)
+						}
+					>
+						0 stiķi
+					</ResultButton>
+				</div>
 			</div>
 		</div>
 	);
@@ -487,8 +626,10 @@ const CurrentGamePlayer: FC<{
 		(dealer + currentActionCount + 1) % playerCount === index;
 
 	return (
-		<div className="flex-1 flex flex-col items-center bg-white/20">
-			<div>{player}</div>
+		<div className="flex-1 flex flex-col items-center bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-lg p-4 min-h-[200px] shadow-lg border border-white/20">
+			<div className="text-white font-semibold text-lg mb-2">
+				{player}
+			</div>
 			<Roka dealer={dealer} playerCount={playerCount} index={index} />
 
 			{shouldGiveAction && <Actions />}
@@ -516,34 +657,34 @@ const Roka: FC<{ dealer: number; playerCount: number; index: number }> = ({
 	if (text == "") {
 		return null;
 	}
-	return <div>{text}</div>;
+	return <div className="text-emerald-200 text-sm mb-2">{text}</div>;
 };
 
 const Actions: FC = () => {
 	const { setGamestateAction } = useGameContext();
 	return (
-		<div className="flex flex-col gap-1">
-			<button type="button" onClick={() => setGamestateAction(-1)}>
+		<div className="flex flex-col gap-2 w-full">
+			<ActionButton variant="red" onClick={() => setGamestateAction(-1)}>
 				Garām
-			</button>
-			<button
-				type="button"
+			</ActionButton>
+			<ActionButton
+				variant="purple"
 				onClick={() => setGamestateAction(GameTypeEnum.Lielais)}
 			>
 				Lielais
-			</button>
-			<button
-				type="button"
+			</ActionButton>
+			<ActionButton
+				variant="green"
 				onClick={() => setGamestateAction(GameTypeEnum.Zole)}
 			>
 				Zole
-			</button>
-			<button
-				type="button"
+			</ActionButton>
+			<ActionButton
+				variant="red"
 				onClick={() => setGamestateAction(GameTypeEnum.MazaZole)}
 			>
 				Mazā zole
-			</button>
+			</ActionButton>
 		</div>
 	);
 };
@@ -555,55 +696,50 @@ const GameTypeInfo: FC<{ gameType: GameType; index: number }> = ({
 	const { gameResultZaudejaGaldinu, gameResultMazaZole } = useGameContext();
 	if (gameType[0] === GameTypeEnum.Galdins) {
 		return (
-			<>
-				<GameTypeName gameType={gameType[0]} />
-				<button
-					type="button"
+			<div className="flex flex-col items-center w-full">
+				<GameTypeDisplay gameType={gameType[0]} showBackground={true} />
+				<ResultButton
+					variant="lose"
+					className="w-full"
 					onClick={() => gameResultZaudejaGaldinu(gameType, index)}
 				>
 					Zaudēja
-				</button>
-			</>
+				</ResultButton>
+			</div>
 		);
 	} else if (gameType[0] === GameTypeEnum.MazaZole && gameType[1] === index) {
 		return (
-			<>
-				<GameTypeName gameType={gameType[0]} />
-				<div>
-					<button
-						type="button"
+			<div className="flex flex-col items-center w-full">
+				<GameTypeDisplay gameType={gameType[0]} showBackground={true} />
+				<div className="flex gap-2 w-full">
+					<ResultButton
+						variant="lose"
+						className="flex-1 py-2 px-3"
 						onClick={() => gameResultMazaZole(gameType, false)}
 					>
 						Zaudēja
-					</button>
-					<button
-						type="button"
+					</ResultButton>
+					<ResultButton
+						variant="win"
+						className="flex-1 py-2 px-3"
 						onClick={() => gameResultMazaZole(gameType, true)}
 					>
 						Uzvarēja
-					</button>
+					</ResultButton>
 				</div>
-			</>
+			</div>
 		);
 	}
 	if (gameType[1] === index) {
-		return <GameTypeName gameType={gameType[0]} />;
+		return (
+			<div className="text-emerald-200 font-medium">
+				<GameTypeDisplay gameType={gameType[0]} />
+			</div>
+		);
 	}
 	return null;
 };
 
-const GameTypeName: FC<{ gameType: GameTypeEnum }> = ({ gameType }) => {
-	if (gameType === GameTypeEnum.Galdins) {
-		return <div>Galdiņš</div>;
-	} else if (gameType === GameTypeEnum.MazaZole) {
-		return <div>Mazā zole</div>;
-	} else if (gameType === GameTypeEnum.Zole) {
-		return <div>Zole</div>;
-	} else if (gameType === GameTypeEnum.Lielais) {
-		return <div>Lielais zole</div>;
-	}
-	return null;
-};
 export const Route = createFileRoute("/game/$data")({
 	component: RouteComponent,
 	params: {

@@ -1,54 +1,120 @@
-import { FC, useMemo } from "react";
+import { FC, useMemo, ReactNode } from "react";
 import { useAppState } from "../../AppContext/effects/useAppState";
 import { GameWithScore } from "../../AppContext/AppContext";
+
+// Reusable table components
+const GameTable: FC<{ children: ReactNode }> = ({ children }) => (
+	<table className="w-full">{children}</table>
+);
+
+const GameTableHeader: FC<{ children: ReactNode }> = ({ children }) => (
+	<thead>{children}</thead>
+);
+
+const GameTableBody: FC<{ children: ReactNode }> = ({ children }) => (
+	<tbody>{children}</tbody>
+);
+
+const GameTableFooter: FC<{ children: ReactNode }> = ({ children }) => (
+	<tfoot>{children}</tfoot>
+);
+
+const GameTableRow: FC<{
+	children: ReactNode;
+	isGameEnd?: boolean;
+	index?: number;
+	playersCount?: number;
+}> = ({ children, isGameEnd = false, index, playersCount }) => {
+	const shouldShowBorder =
+		isGameEnd ||
+		(index !== undefined &&
+			playersCount !== undefined &&
+			index % playersCount === playersCount - 1);
+
+	return (
+		<tr
+			className={
+				shouldShowBorder
+					? "border-b-white/30 border-b"
+					: "border-b-transparent border-b"
+			}
+		>
+			{children}
+		</tr>
+	);
+};
+
+const GameTableCell: FC<{
+	children: ReactNode;
+	isHeader?: boolean;
+	align?: "left" | "center" | "right";
+	background?: string;
+}> = ({ children, isHeader = false, align = "left", background = "" }) => {
+	const alignClass = {
+		left: "",
+		center: "text-center",
+		right: "text-right",
+	}[align];
+
+	const className = `${alignClass} ${background}`.trim();
+
+	return isHeader ? (
+		<th className={className}>{children}</th>
+	) : (
+		<td className={className}>{children}</td>
+	);
+};
 
 export const PlayedGames: FC = () => {
 	const { games, players } = useAppState();
 	const totals = useMemo(
 		() =>
 			games.length === 0
-				? new Array(state.players.length).fill(0)
+				? new Array(players.length).fill(0)
 				: games[games.length - 1].scores,
-		[games]
+		[games, players.length],
 	);
+
 	return (
-		<table className="w-full">
-			<thead>
-				<tr>
-					<td />
+		<GameTable>
+			<GameTableHeader>
+				<GameTableRow>
+					<GameTableCell>{""}</GameTableCell>
 					{players.map((name, i) => (
-						<th key={i}>{name}</th>
+						<GameTableCell key={i} isHeader>
+							{name}
+						</GameTableCell>
 					))}
-					<td />
-				</tr>
-			</thead>
-			<tbody>
+					<GameTableCell>{""}</GameTableCell>
+				</GameTableRow>
+			</GameTableHeader>
+			<GameTableBody>
 				{games.map((game, i) => (
-					<tr
+					<GameTableRow
 						key={i}
-						className={
-							i % players.length === players.length - 1
-								? "border-b-white/30 border-b "
-								: "border-b-transparent border-b"
-						}
+						index={i}
+						playersCount={players.length}
 					>
-						<td>{i + 1}</td>
+						<GameTableCell>{i + 1}</GameTableCell>
 						{players.map((_, j) => (
 							<GameCell key={j} player={j} game={game} />
 						))}
-						<td>{game.type}</td>
-					</tr>
+						<GameTableCell>{game.type}</GameTableCell>
+					</GameTableRow>
 				))}
-			</tbody>
-			<tfoot>
-				<tr>
-					<td>Σ</td>
+			</GameTableBody>
+			<GameTableFooter>
+				<GameTableRow>
+					<GameTableCell>Σ</GameTableCell>
 					{totals.map((total, i) => (
-						<th key={i}>{total}</th>
+						<GameTableCell key={i} isHeader>
+							{total}
+						</GameTableCell>
 					))}
-				</tr>
-			</tfoot>
-		</table>
+					<GameTableCell>{""}</GameTableCell>
+				</GameTableRow>
+			</GameTableFooter>
+		</GameTable>
 	);
 };
 function useGameResultClassName(player: number, game: GameWithScore): string {
@@ -88,9 +154,9 @@ const GameCell: FC<{ player: number; game: GameWithScore }> = ({
 }) => {
 	const gameResultClassName = useGameResultClassName(player, game);
 	return (
-		<td className={"text-center " + gameResultClassName}>
+		<GameTableCell align="center" background={gameResultClassName}>
 			{game.scores[player]} <Diff diff={game.diff[player]} />
-		</td>
+		</GameTableCell>
 	);
 };
 

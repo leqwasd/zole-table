@@ -7,10 +7,48 @@ import {
 	useMemo,
 	useRef,
 	useState,
+	ReactNode,
 } from "react";
 import { useAppDispatch } from "../AppContext/effects/useAppDispatch";
 import { PlayerCount } from "../AppContext/AppContext";
 import { FlexLayout } from "./Components/FlexLayout";
+
+// Reusable button component for setup pages
+const PrimaryButton: FC<{
+	children: ReactNode;
+	onClick?: () => void;
+	type?: "button" | "submit";
+	size?: "sm" | "md" | "lg";
+	className?: string;
+}> = ({ children, onClick, type = "button", size = "md", className = "" }) => {
+	const sizeClasses = {
+		sm: "px-4 py-2 text-sm",
+		md: "px-5 py-2.5 text-sm",
+		lg: "px-8 py-4 text-lg",
+	}[size];
+
+	return (
+		<button
+			type={type}
+			onClick={onClick}
+			className={`bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl ${sizeClasses} ${className}`}
+		>
+			{children}
+		</button>
+	);
+};
+
+const PlayerCountSelectButton: FC<{
+	children: ReactNode;
+	onClick: () => void;
+}> = ({ children, onClick }) => (
+	<button
+		onClick={onClick}
+		className="flex-1 p-10 text-3xl bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-sm rounded-lg shadow-lg border border-white/20 hover:from-white/25 hover:to-white/10 transition-all duration-300 text-white font-semibold hover:shadow-xl"
+	>
+		{children}
+	</button>
+);
 
 export const SetupPage: FC = () => {
 	const [playerCount, setPlayerCount] = useState<PlayerCount | null>(null);
@@ -26,29 +64,13 @@ const PlayerCountSelectButtons: FC<{
 }> = ({ setPlayerCount }) => {
 	return (
 		<FlexLayout>
-			<PlayerCountSelectButton
-				count={3}
-				setPlayerCount={setPlayerCount}
-			/>
-			<PlayerCountSelectButton
-				count={4}
-				setPlayerCount={setPlayerCount}
-			/>
+			<PlayerCountSelectButton onClick={() => setPlayerCount(3)}>
+				3
+			</PlayerCountSelectButton>
+			<PlayerCountSelectButton onClick={() => setPlayerCount(4)}>
+				4
+			</PlayerCountSelectButton>
 		</FlexLayout>
-	);
-};
-
-const PlayerCountSelectButton: FC<{
-	count: PlayerCount;
-	setPlayerCount: Dispatch<SetStateAction<PlayerCount | null>>;
-}> = ({ count, setPlayerCount }) => {
-	const onClick = useCallback(() => {
-		setPlayerCount(count);
-	}, [count, setPlayerCount]);
-	return (
-		<button onClick={onClick} className="flex-1 p-10 text-3xl">
-			{count}
-		</button>
 	);
 };
 
@@ -62,7 +84,7 @@ const PlayerNamesInputs: FC<{
 			new Array(playerCount)
 				.fill("")
 				.map((_, i) => `${i + 1}. spēlētājs`),
-		[playerCount]
+		[playerCount],
 	);
 	const onSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
 		(e) => {
@@ -71,25 +93,28 @@ const PlayerNamesInputs: FC<{
 			dispatch({
 				type: "setup",
 				players: Array.from(
-					new FormData(formRef.current!).values()
+					new FormData(formRef.current!).values(),
 				) as string[],
 			});
 		},
-		[dispatch]
+		[dispatch],
 	);
 	return (
-		<form ref={formRef} onSubmit={onSubmit}>
+		<form ref={formRef} onSubmit={onSubmit} className="space-y-6">
 			<FlexLayout>
 				{placeholders.map((placeholder, i) => (
 					<PlayerNameInput key={i} placeholder={placeholder} />
 				))}
 			</FlexLayout>
-			<button
-				type="submit"
-				className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-			>
-				Submit
-			</button>
+			<div className="flex justify-center">
+				<PrimaryButton
+					type="submit"
+					size="lg"
+					className="w-full max-w-xs"
+				>
+					Sākt spēli
+				</PrimaryButton>
+			</div>
 		</form>
 	);
 };
@@ -98,7 +123,7 @@ const PlayerNameInput: FC<{ placeholder: string }> = ({ placeholder }) => (
 		type="text"
 		name="playername"
 		defaultValue={placeholder}
-		className="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+		className="flex-1 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 block w-full p-3 placeholder-white/60 transition-all duration-300"
 		required
 		placeholder={placeholder}
 	/>
