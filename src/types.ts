@@ -43,7 +43,7 @@ export type Game =
 	| GameTypeLielaisResult;
 export type GameWithScore = { game: Game; scores: number[]; diff: number[] };
 export type GameTypeGaldinsResult = [...GameTypeGaldins, loser: number];
-export type GameTypeMazaZoleResult = [...GameTypeMazaZole, result: boolean];
+export type GameTypeMazaZoleResult = [...GameTypeMazaZole, result: number];
 export type GameTypeZoleResult = [
 	...GameTypeZole,
 	result: ZoleWinResult | ZoleLoseResult,

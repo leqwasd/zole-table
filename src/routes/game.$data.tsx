@@ -113,7 +113,7 @@ const RouteComponent: FC = () => {
 	);
 	const gameResultMazaZole = useCallback(
 		(gameType: GameTypeMazaZole, result: boolean) => {
-			const game: Game = [...gameType, result];
+			const game: Game = [...gameType, +result];
 			return navigate({
 				...state,
 				games: [...state.games, game],
