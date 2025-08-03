@@ -2,6 +2,7 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { FC, FormEventHandler, useCallback, useMemo, useRef } from "react";
 import { compress, decompress } from "../utils";
 import { FlexLayout } from "../Pages/Components/FlexLayout";
+import { convertGameStateFromSetup, Setup1, Setup2, SetupData } from "../types";
 
 const RouteComponent: FC = () => {
 	const { data } = Route.useParams();
@@ -119,11 +120,6 @@ const PlayerNameInput: FC<{ placeholder: string }> = ({ placeholder }) => (
 	/>
 );
 
-type Setup1 = [number];
-type Setup2 = [...Setup1, string[]];
-type Setup3 = [...Setup2, number];
-type SetupData = Setup1 | Setup2 | Setup3;
-
 export const Route = createFileRoute("/setup/{-$data}")({
 	component: RouteComponent,
 	params: {
@@ -142,10 +138,7 @@ export const Route = createFileRoute("/setup/{-$data}")({
 			throw redirect({
 				to: "/game/$data",
 				params: {
-					data: {
-						players: params.data[1],
-						dealer: params.data[2],
-					},
+					data: convertGameStateFromSetup(params.data),
 				},
 			});
 		}

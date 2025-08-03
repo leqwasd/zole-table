@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { FC } from "react";
-
 const Index: FC = () => {
 	return (
 		<div className="p-2">
