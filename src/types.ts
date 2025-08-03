@@ -16,21 +16,13 @@ export type GameStateAction =
 	| GameTypeEnum.Zole
 	| GameTypeEnum.MazaZole;
 
-export type GameTypeGaldins = {
-	type: GameTypeEnum.Galdins;
-};
-export type GameTypeMazaZole = {
-	type: GameTypeEnum.MazaZole;
-	player: number;
-};
-export type GameTypeZole = {
-	type: GameTypeEnum.Zole;
-	player: number;
-};
-export type GameTypeLielais = {
-	type: GameTypeEnum.Lielais;
-	player: number;
-};
+export type GameTypeGaldins = [gameType: GameTypeEnum.Galdins];
+export type GameTypeMazaZole = [
+	gameType: GameTypeEnum.MazaZole,
+	player: number,
+];
+export type GameTypeZole = [gameType: GameTypeEnum.Zole, player: number];
+export type GameTypeLielais = [gameType: GameTypeEnum.Lielais, player: number];
 export type GameType =
 	| GameTypeGaldins
 	| GameTypeMazaZole
@@ -49,15 +41,17 @@ export type Game =
 	| GameTypeMazaZoleResult
 	| GameTypeZoleResult
 	| GameTypeLielaisResult;
-export type GameWithScore = Game & { scores: number[]; diff: number[] };
-export type GameTypeGaldinsResult = GameTypeGaldins & { loser: number };
-export type GameTypeMazaZoleResult = GameTypeMazaZole & { result: boolean };
-export type GameTypeZoleResult = GameTypeZole & {
-	result: ZoleWinResult | ZoleLoseResult;
-};
-export type GameTypeLielaisResult = GameTypeLielais & {
-	result: ZoleWinResult | ZoleLoseResult;
-};
+export type GameWithScore = { game: Game; scores: number[]; diff: number[] };
+export type GameTypeGaldinsResult = [...GameTypeGaldins, loser: number];
+export type GameTypeMazaZoleResult = [...GameTypeMazaZole, result: boolean];
+export type GameTypeZoleResult = [
+	...GameTypeZole,
+	result: ZoleWinResult | ZoleLoseResult,
+];
+export type GameTypeLielaisResult = [
+	...GameTypeLielais,
+	result: ZoleWinResult | ZoleLoseResult,
+];
 
 export const enum ZoleWinResult {
 	win61 = 1,

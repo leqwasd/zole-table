@@ -62,7 +62,7 @@ function useNavigateGame() {
 const RouteComponent: FC = () => {
 	const state = useGameStateInContext();
 	const gamesWithScore = useMemo(() => {
-		const results = new Array(state.games.length);
+		const results: GameWithScore[] = [];
 		let previousScores = new Array(state.players.length).fill(0);
 		for (const game of state.games) {
 			results.push(withScore(game, previousScores, state.players));
@@ -77,9 +77,7 @@ const RouteComponent: FC = () => {
 				if (state.preGameActions.length === 2) {
 					return navigate({
 						...state,
-						gameType: {
-							type: GameTypeEnum.Galdins,
-						},
+						gameType: [GameTypeEnum.Galdins],
 					});
 				} else {
 					return navigate({
@@ -92,22 +90,18 @@ const RouteComponent: FC = () => {
 				(state.dealer + state.games.length) % state.players.length;
 			return navigate({
 				...state,
-				gameType: {
-					type: action,
-					player:
-						(currentDealer + state.preGameActions.length + 1) %
+				gameType: [
+					action,
+					(currentDealer + state.preGameActions.length + 1) %
 						state.players.length,
-				},
+				],
 			});
 		},
 		[navigate, state],
 	);
 	const gameResultZaudejaGaldinu = useCallback(
 		(gameType: GameTypeGaldins, player: number) => {
-			const game: Game = {
-				...gameType,
-				loser: player,
-			};
+			const game: Game = [...gameType, player];
 			return navigate({
 				...state,
 				games: [...state.games, game],
@@ -119,10 +113,7 @@ const RouteComponent: FC = () => {
 	);
 	const gameResultMazaZole = useCallback(
 		(gameType: GameTypeMazaZole, result: boolean) => {
-			const game: Game = {
-				...gameType,
-				result,
-			};
+			const game: Game = [...gameType, result];
 			return navigate({
 				...state,
 				games: [...state.games, game],
@@ -137,10 +128,7 @@ const RouteComponent: FC = () => {
 			gameType: GameTypeZole | GameTypeLielais,
 			result: ZoleWinResult | ZoleLoseResult,
 		) => {
-			const game: Game = {
-				...gameType,
-				result,
-			};
+			const game: Game = [...gameType, result];
 			return navigate({
 				...state,
 				games: [...state.games, game],
@@ -175,7 +163,7 @@ function withScore(
 	);
 	const scores = previousScores.map((score, i) => score + diff[i]);
 	return {
-		...game,
+		game,
 		diff,
 		scores,
 	};
@@ -186,80 +174,80 @@ function getPointsForGameForPlayer(
 	playerCount: number,
 ) {
 	const modifier = playerCount - 1;
-	switch (game.type) {
+	switch (game[0]) {
 		case GameTypeEnum.Galdins:
-			if (game.loser == player) {
+			if (game[1] == player) {
 				return PointTable.GaldinsLosePerPlayer * modifier;
 			} else {
 				return -PointTable.GaldinsLosePerPlayer;
 			}
 		case GameTypeEnum.MazaZole:
-			if (game.result) {
-				if (game.player === player) {
+			if (game[2]) {
+				if (game[1] === player) {
 					return PointTable.MazaZoleWinPerPlayer * modifier;
 				} else {
 					return -PointTable.MazaZoleWinPerPlayer;
 				}
 			} else {
-				if (game.player === player) {
+				if (game[1] === player) {
 					return PointTable.MazaZoleLossPerPlayer * modifier;
 				} else {
 					return -PointTable.MazaZoleLossPerPlayer;
 				}
 			}
 		case GameTypeEnum.Lielais:
-			switch (game.result) {
+			switch (game[2]) {
 				case ZoleWinResult.win61:
-					return player === game.player
+					return player === game[1]
 						? PointTable.LielaisWin * modifier
 						: -PointTable.LielaisWin;
 				case ZoleWinResult.win91:
-					return player === game.player
+					return player === game[1]
 						? PointTable.LielaisWinJanos * modifier
 						: -PointTable.LielaisWinJanos;
 				case ZoleWinResult.winAll:
-					return player === game.player
+					return player === game[1]
 						? PointTable.LielaisWinBezstiki * modifier
 						: -PointTable.LielaisWinBezstiki;
 				case ZoleLoseResult.lost60:
-					return player === game.player
+					return player === game[1]
 						? PointTable.LielaisLost * modifier
 						: -PointTable.LielaisLost;
 				case ZoleLoseResult.lost30:
-					return player === game.player
+					return player === game[1]
 						? PointTable.LielaisLostJanos * modifier
 						: -PointTable.LielaisLostJanos;
 				case ZoleLoseResult.lostAll:
-					return player === game.player
+					return player === game[1]
 						? PointTable.LielaisLostBezstiki * modifier
 						: -PointTable.LielaisLostBezstiki;
 				default:
 					return 0;
 			}
 		case GameTypeEnum.Zole:
-			switch (game.result) {
+			switch (game[2]) {
 				case ZoleWinResult.win61:
-					return player === game.player
+					return player === game[1]
 						? PointTable.ZoleWin * modifier
 						: -PointTable.ZoleWin;
 				case ZoleWinResult.win91:
-					return player === game.player
+					return player === game[1]
 						? PointTable.ZoleWinJanos * modifier
 						: -PointTable.ZoleWinJanos;
 				case ZoleWinResult.winAll:
-					return player === game.player
+					return player === game[1]
 						? PointTable.ZoleWinBezstiki * modifier
 						: -PointTable.ZoleWinBezstiki;
 				case ZoleLoseResult.lost60:
-					return player === game.player
+					return player === game[1]
 						? PointTable.ZoleLost * modifier
 						: -PointTable.ZoleLost;
 				case ZoleLoseResult.lost30:
-					return player === game.player
+					return player === game[1]
 						? PointTable.ZoleLostJanos * modifier
 						: -PointTable.ZoleLostJanos;
 				case ZoleLoseResult.lostAll:
-					return player === game.player
+					return player === game[1]
 						? PointTable.ZoleLostBezstiki * modifier
 						: -PointTable.ZoleLostBezstiki;
 				default:
@@ -321,7 +309,7 @@ export const PlayedGames: FC<{ games: GameWithScore[]; players: string[] }> = ({
 							<GameCell key={j} player={j} game={game} />
 						))}
 						<td>
-							<GameTypeName gameType={game.type} />
+							<GameTypeName gameType={game.game[0]} />
 						</td>
 					</tr>
 				))}
@@ -338,16 +326,19 @@ export const PlayedGames: FC<{ games: GameWithScore[]; players: string[] }> = ({
 	);
 };
 
-function useGameResultClassName(player: number, game: GameWithScore): string {
+function useGameResultClassName(
+	player: number,
+	gameWithScore: GameWithScore,
+): string {
+	const { game } = gameWithScore;
 	if (
-		(game.type === GameTypeEnum.Lielais ||
-			game.type === GameTypeEnum.Zole) &&
-		game.player === player
+		(game[0] === GameTypeEnum.Lielais || game[1] === GameTypeEnum.Zole) &&
+		game[1] === player
 	) {
 		if (
-			game.result === ZoleWinResult.win61 ||
-			game.result === ZoleWinResult.win91 ||
-			game.result === ZoleWinResult.winAll
+			game[2] === ZoleWinResult.win61 ||
+			game[2] === ZoleWinResult.win91 ||
+			game[2] === ZoleWinResult.winAll
 		) {
 			const className = "bg-green-500/50";
 			return className;
@@ -355,15 +346,15 @@ function useGameResultClassName(player: number, game: GameWithScore): string {
 			const className = "bg-red-500/50";
 			return className;
 		}
-	} else if (game.type === GameTypeEnum.MazaZole && game.player === player) {
-		if (game.result) {
+	} else if (game[0] === GameTypeEnum.MazaZole && game[1] === player) {
+		if (game[2]) {
 			const className = "bg-green-500/50";
 			return className;
 		} else {
 			const className = "bg-red-500/50";
 			return className;
 		}
-	} else if (game.type === GameTypeEnum.Galdins && game.loser === player) {
+	} else if (game[0] === GameTypeEnum.Galdins && game[1] === player) {
 		const className = "bg-red-500/50";
 		return className;
 	}
@@ -418,8 +409,8 @@ const GamePage: FC = () => {
 const GameResults: FC<{ gameType: GameType }> = ({ gameType }) => {
 	const { gameResultLielais } = useGameContext();
 	if (
-		gameType.type === GameTypeEnum.Galdins ||
-		gameType.type === GameTypeEnum.MazaZole
+		gameType[0] === GameTypeEnum.Galdins ||
+		gameType[0] === GameTypeEnum.MazaZole
 	) {
 		return null;
 	}
@@ -498,7 +489,6 @@ const CurrentGamePlayer: FC<{
 	return (
 		<div className="flex-1 flex flex-col items-center bg-white/20">
 			<div>{player}</div>
-			{dealer === index && <div>Dalītājs</div>}
 			<Roka dealer={dealer} playerCount={playerCount} index={index} />
 
 			{shouldGiveAction && <Actions />}
@@ -515,15 +505,15 @@ const Roka: FC<{ dealer: number; playerCount: number; index: number }> = ({
 	playerCount,
 	index,
 }) => {
-	let text: string | null = null;
+	let text: string | null = dealer === index ? "(Dalītājs) " : "";
 	if ((dealer + 1) % playerCount === index) {
-		text = "1. roka";
+		text += "1. roka";
 	} else if ((dealer + 2) % playerCount === index) {
-		text = "2. roka";
+		text += "2. roka";
 	} else if ((dealer + 3) % playerCount === index) {
-		text = "3. roka";
+		text += "3. roka";
 	}
-	if (text == null) {
+	if (text == "") {
 		return null;
 	}
 	return <div>{text}</div>;
@@ -531,34 +521,27 @@ const Roka: FC<{ dealer: number; playerCount: number; index: number }> = ({
 
 const Actions: FC = () => {
 	const { setGamestateAction } = useGameContext();
-	const onGaramClick = useCallback(
-		() => setGamestateAction(-1),
-		[setGamestateAction],
-	);
-	const onLielaisClick = useCallback(
-		() => setGamestateAction(GameTypeEnum.Lielais),
-		[setGamestateAction],
-	);
-	const onZoleClick = useCallback(
-		() => setGamestateAction(GameTypeEnum.Zole),
-		[setGamestateAction],
-	);
-	const onMazaZoleClick = useCallback(
-		() => setGamestateAction(GameTypeEnum.MazaZole),
-		[setGamestateAction],
-	);
 	return (
 		<div className="flex flex-col gap-1">
-			<button type="button" onClick={onGaramClick}>
+			<button type="button" onClick={() => setGamestateAction(-1)}>
 				Garām
 			</button>
-			<button type="button" onClick={onLielaisClick}>
+			<button
+				type="button"
+				onClick={() => setGamestateAction(GameTypeEnum.Lielais)}
+			>
 				Lielais
 			</button>
-			<button type="button" onClick={onZoleClick}>
+			<button
+				type="button"
+				onClick={() => setGamestateAction(GameTypeEnum.Zole)}
+			>
 				Zole
 			</button>
-			<button type="button" onClick={onMazaZoleClick}>
+			<button
+				type="button"
+				onClick={() => setGamestateAction(GameTypeEnum.MazaZole)}
+			>
 				Mazā zole
 			</button>
 		</div>
@@ -570,10 +553,10 @@ const GameTypeInfo: FC<{ gameType: GameType; index: number }> = ({
 	index,
 }) => {
 	const { gameResultZaudejaGaldinu, gameResultMazaZole } = useGameContext();
-	if (gameType.type === GameTypeEnum.Galdins) {
+	if (gameType[0] === GameTypeEnum.Galdins) {
 		return (
 			<>
-				<GameTypeName gameType={gameType.type} />
+				<GameTypeName gameType={gameType[0]} />
 				<button
 					type="button"
 					onClick={() => gameResultZaudejaGaldinu(gameType, index)}
@@ -582,13 +565,10 @@ const GameTypeInfo: FC<{ gameType: GameType; index: number }> = ({
 				</button>
 			</>
 		);
-	} else if (
-		gameType.type === GameTypeEnum.MazaZole &&
-		gameType.player === index
-	) {
+	} else if (gameType[0] === GameTypeEnum.MazaZole && gameType[1] === index) {
 		return (
 			<>
-				<GameTypeName gameType={gameType.type} />
+				<GameTypeName gameType={gameType[0]} />
 				<div>
 					<button
 						type="button"
@@ -606,8 +586,8 @@ const GameTypeInfo: FC<{ gameType: GameType; index: number }> = ({
 			</>
 		);
 	}
-	if (gameType.player === index) {
-		return <GameTypeName gameType={gameType.type} />;
+	if (gameType[1] === index) {
+		return <GameTypeName gameType={gameType[0]} />;
 	}
 	return null;
 };
