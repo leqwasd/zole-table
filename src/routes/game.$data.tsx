@@ -6,6 +6,7 @@ import {
 	GameState,
 	GameStateAction,
 	GameType,
+	GameTypeEnum,
 	GameTypeGaldins,
 	GameTypeLielais,
 	GameTypeMazaZole,
@@ -19,9 +20,10 @@ import { FlexLayout } from "../Pages/Components/FlexLayout";
 const GameContext = createContext({} as GameContext);
 type GameContext = {
 	state: Required<GameState>;
+	gamesWithScore: GameWithScore[];
 	setGamestateAction(action: GameStateAction): void;
 	gameResultZaudejaGaldinu(gameType: GameTypeGaldins, player: number): void;
-	gameResultMazaZole(gameType: GameTypeMazaZole, didWin: boolean): void;
+	gameResultMazaZole(gameType: GameTypeMazaZole, result: boolean): void;
 	gameResultLielais(
 		gameType: GameTypeZole | GameTypeLielais,
 		result: ZoleWinResult | ZoleLoseResult,
@@ -59,15 +61,24 @@ function useNavigateGame() {
 }
 const RouteComponent: FC = () => {
 	const state = useGameStateInContext();
+	const gamesWithScore = useMemo(() => {
+		const results = new Array(state.games.length);
+		let previousScores = new Array(state.players.length).fill(0);
+		for (const game of state.games) {
+			results.push(withScore(game, previousScores, state.players));
+			previousScores = results[results.length - 1].scores;
+		}
+		return results;
+	}, [state]);
 	const navigate = useNavigateGame();
 	const setGamestateAction = useCallback(
 		(action: GameStateAction) => {
-			if (action === "Garām") {
+			if (action === -1) {
 				if (state.preGameActions.length === 2) {
 					return navigate({
 						...state,
 						gameType: {
-							type: "Galdiņš",
+							type: GameTypeEnum.Galdins,
 						},
 					});
 				} else {
@@ -93,14 +104,13 @@ const RouteComponent: FC = () => {
 	);
 	const gameResultZaudejaGaldinu = useCallback(
 		(gameType: GameTypeGaldins, player: number) => {
-			const scores = getPreviousScores(state);
 			const game: Game = {
 				...gameType,
 				loser: player,
 			};
 			return navigate({
 				...state,
-				games: [...state.games, withScore(game, scores, state.players)],
+				games: [...state.games, game],
 				gameType: null,
 				preGameActions: [],
 			});
@@ -108,15 +118,14 @@ const RouteComponent: FC = () => {
 		[navigate, state],
 	);
 	const gameResultMazaZole = useCallback(
-		(gameType: GameTypeMazaZole, didWin: boolean) => {
-			const scores = getPreviousScores(state);
+		(gameType: GameTypeMazaZole, result: boolean) => {
 			const game: Game = {
 				...gameType,
-				didWin,
+				result,
 			};
 			return navigate({
 				...state,
-				games: [...state.games, withScore(game, scores, state.players)],
+				games: [...state.games, game],
 				gameType: null,
 				preGameActions: [],
 			});
@@ -128,14 +137,13 @@ const RouteComponent: FC = () => {
 			gameType: GameTypeZole | GameTypeLielais,
 			result: ZoleWinResult | ZoleLoseResult,
 		) => {
-			const scores = getPreviousScores(state);
 			const game: Game = {
 				...gameType,
 				result,
 			};
 			return navigate({
 				...state,
-				games: [...state.games, withScore(game, scores, state.players)],
+				games: [...state.games, game],
 				gameType: null,
 				preGameActions: [],
 			});
@@ -146,6 +154,7 @@ const RouteComponent: FC = () => {
 		<GameContext.Provider
 			value={{
 				state,
+				gamesWithScore,
 				setGamestateAction,
 				gameResultZaudejaGaldinu,
 				gameResultMazaZole,
@@ -156,13 +165,6 @@ const RouteComponent: FC = () => {
 		</GameContext.Provider>
 	);
 };
-function getPreviousScores(state: Required<GameState>): number[] {
-	if (state.games.length) {
-		return state.games[state.games.length - 1].scores;
-	} else {
-		return new Array(state.players.length).fill(0);
-	}
-}
 function withScore(
 	game: Game,
 	previousScores: number[],
@@ -185,14 +187,14 @@ function getPointsForGameForPlayer(
 ) {
 	const modifier = playerCount - 1;
 	switch (game.type) {
-		case "Galdiņš":
+		case GameTypeEnum.Galdins:
 			if (game.loser == player) {
 				return PointTable.GaldinsLosePerPlayer * modifier;
 			} else {
 				return -PointTable.GaldinsLosePerPlayer;
 			}
-		case "Mazā zole":
-			if (game.didWin) {
+		case GameTypeEnum.MazaZole:
+			if (game.result) {
 				if (game.player === player) {
 					return PointTable.MazaZoleWinPerPlayer * modifier;
 				} else {
@@ -205,58 +207,58 @@ function getPointsForGameForPlayer(
 					return -PointTable.MazaZoleLossPerPlayer;
 				}
 			}
-		case "Lielais":
+		case GameTypeEnum.Lielais:
 			switch (game.result) {
-				case "Uzvar ar 61 - 90 acīm":
+				case ZoleWinResult.win61:
 					return player === game.player
 						? PointTable.LielaisWin * modifier
 						: -PointTable.LielaisWin;
-				case "Uzvar ar 91 vai vairāk acīm":
+				case ZoleWinResult.win91:
 					return player === game.player
 						? PointTable.LielaisWinJanos * modifier
 						: -PointTable.LielaisWinJanos;
-				case "Uzvar iegūstot visus stiķus":
+				case ZoleWinResult.winAll:
 					return player === game.player
 						? PointTable.LielaisWinBezstiki * modifier
 						: -PointTable.LielaisWinBezstiki;
-				case "Zaudē ar 31 - 60 acīm":
+				case ZoleLoseResult.lost60:
 					return player === game.player
 						? PointTable.LielaisLost * modifier
 						: -PointTable.LielaisLost;
-				case "Zaudē ar 30 un mazāk acīm":
+				case ZoleLoseResult.lost30:
 					return player === game.player
 						? PointTable.LielaisLostJanos * modifier
 						: -PointTable.LielaisLostJanos;
-				case "Zaudē neiegūstot nevienu stiķi":
+				case ZoleLoseResult.lostAll:
 					return player === game.player
 						? PointTable.LielaisLostBezstiki * modifier
 						: -PointTable.LielaisLostBezstiki;
 				default:
 					return 0;
 			}
-		case "Zole":
+		case GameTypeEnum.Zole:
 			switch (game.result) {
-				case "Uzvar ar 61 - 90 acīm":
+				case ZoleWinResult.win61:
 					return player === game.player
 						? PointTable.ZoleWin * modifier
 						: -PointTable.ZoleWin;
-				case "Uzvar ar 91 vai vairāk acīm":
+				case ZoleWinResult.win91:
 					return player === game.player
 						? PointTable.ZoleWinJanos * modifier
 						: -PointTable.ZoleWinJanos;
-				case "Uzvar iegūstot visus stiķus":
+				case ZoleWinResult.winAll:
 					return player === game.player
 						? PointTable.ZoleWinBezstiki * modifier
 						: -PointTable.ZoleWinBezstiki;
-				case "Zaudē ar 31 - 60 acīm":
+				case ZoleLoseResult.lost60:
 					return player === game.player
 						? PointTable.ZoleLost * modifier
 						: -PointTable.ZoleLost;
-				case "Zaudē ar 30 un mazāk acīm":
+				case ZoleLoseResult.lost30:
 					return player === game.player
 						? PointTable.ZoleLostJanos * modifier
 						: -PointTable.ZoleLostJanos;
-				case "Zaudē neiegūstot nevienu stiķi":
+				case ZoleLoseResult.lostAll:
 					return player === game.player
 						? PointTable.ZoleLostBezstiki * modifier
 						: -PointTable.ZoleLostBezstiki;
@@ -318,7 +320,9 @@ export const PlayedGames: FC<{ games: GameWithScore[]; players: string[] }> = ({
 						{players.map((_, j) => (
 							<GameCell key={j} player={j} game={game} />
 						))}
-						<td>{game.type}</td>
+						<td>
+							<GameTypeName gameType={game.type} />
+						</td>
 					</tr>
 				))}
 			</tbody>
@@ -333,15 +337,17 @@ export const PlayedGames: FC<{ games: GameWithScore[]; players: string[] }> = ({
 		</table>
 	);
 };
+
 function useGameResultClassName(player: number, game: GameWithScore): string {
 	if (
-		(game.type === "Lielais" || game.type === "Zole") &&
+		(game.type === GameTypeEnum.Lielais ||
+			game.type === GameTypeEnum.Zole) &&
 		game.player === player
 	) {
 		if (
-			game.result === "Uzvar ar 61 - 90 acīm" ||
-			game.result === "Uzvar ar 91 vai vairāk acīm" ||
-			game.result === "Uzvar iegūstot visus stiķus"
+			game.result === ZoleWinResult.win61 ||
+			game.result === ZoleWinResult.win91 ||
+			game.result === ZoleWinResult.winAll
 		) {
 			const className = "bg-green-500/50";
 			return className;
@@ -349,15 +355,15 @@ function useGameResultClassName(player: number, game: GameWithScore): string {
 			const className = "bg-red-500/50";
 			return className;
 		}
-	} else if (game.type === "Mazā zole" && game.player === player) {
-		if (game.didWin) {
+	} else if (game.type === GameTypeEnum.MazaZole && game.player === player) {
+		if (game.result) {
 			const className = "bg-green-500/50";
 			return className;
 		} else {
 			const className = "bg-red-500/50";
 			return className;
 		}
-	} else if (game.type === "Galdiņš" && game.loser === player) {
+	} else if (game.type === GameTypeEnum.Galdins && game.loser === player) {
 		const className = "bg-red-500/50";
 		return className;
 	}
@@ -384,12 +390,12 @@ const Diff: FC<{ diff: number }> = ({ diff }) => (
 );
 
 const GamePage: FC = () => {
-	const { state } = useGameContext();
+	const { state, gamesWithScore } = useGameContext();
 	const currentDealer =
 		(state.dealer + state.games.length) % state.players.length;
 	return (
 		<div>
-			<PlayedGames games={state.games} players={state.players} />
+			<PlayedGames games={gamesWithScore} players={state.players} />
 			<FlexLayout>
 				{state.players.map((player, index) => (
 					<CurrentGamePlayer
@@ -411,7 +417,10 @@ const GamePage: FC = () => {
 };
 const GameResults: FC<{ gameType: GameType }> = ({ gameType }) => {
 	const { gameResultLielais } = useGameContext();
-	if (gameType.type === "Galdiņš" || gameType.type === "Mazā zole") {
+	if (
+		gameType.type === GameTypeEnum.Galdins ||
+		gameType.type === GameTypeEnum.MazaZole
+	) {
 		return null;
 	}
 
@@ -421,7 +430,7 @@ const GameResults: FC<{ gameType: GameType }> = ({ gameType }) => {
 				<button
 					type="button"
 					onClick={() =>
-						gameResultLielais(gameType, "Uzvar ar 61 - 90 acīm")
+						gameResultLielais(gameType, ZoleWinResult.win61)
 					}
 				>
 					Uzvar ar 61 - 90 acīm
@@ -429,10 +438,7 @@ const GameResults: FC<{ gameType: GameType }> = ({ gameType }) => {
 				<button
 					type="button"
 					onClick={() =>
-						gameResultLielais(
-							gameType,
-							"Uzvar ar 91 vai vairāk acīm",
-						)
+						gameResultLielais(gameType, ZoleWinResult.win91)
 					}
 				>
 					Uzvar ar 91 vai vairāk acīm
@@ -440,10 +446,7 @@ const GameResults: FC<{ gameType: GameType }> = ({ gameType }) => {
 				<button
 					type="button"
 					onClick={() =>
-						gameResultLielais(
-							gameType,
-							"Uzvar iegūstot visus stiķus",
-						)
+						gameResultLielais(gameType, ZoleWinResult.winAll)
 					}
 				>
 					Uzvar iegūstot visus stiķus
@@ -453,7 +456,7 @@ const GameResults: FC<{ gameType: GameType }> = ({ gameType }) => {
 				<button
 					type="button"
 					onClick={() =>
-						gameResultLielais(gameType, "Zaudē ar 30 un mazāk acīm")
+						gameResultLielais(gameType, ZoleLoseResult.lost30)
 					}
 				>
 					Zaudē ar 30 un mazāk acīm
@@ -461,7 +464,7 @@ const GameResults: FC<{ gameType: GameType }> = ({ gameType }) => {
 				<button
 					type="button"
 					onClick={() =>
-						gameResultLielais(gameType, "Zaudē ar 31 - 60 acīm")
+						gameResultLielais(gameType, ZoleLoseResult.lost60)
 					}
 				>
 					Zaudē ar 31 - 60 acīm
@@ -469,10 +472,7 @@ const GameResults: FC<{ gameType: GameType }> = ({ gameType }) => {
 				<button
 					type="button"
 					onClick={() =>
-						gameResultLielais(
-							gameType,
-							"Zaudē neiegūstot nevienu stiķi",
-						)
+						gameResultLielais(gameType, ZoleLoseResult.lostAll)
 					}
 				>
 					Zaudē neiegūstot nevienu stiķi
@@ -532,19 +532,19 @@ const Roka: FC<{ dealer: number; playerCount: number; index: number }> = ({
 const Actions: FC = () => {
 	const { setGamestateAction } = useGameContext();
 	const onGaramClick = useCallback(
-		() => setGamestateAction("Garām"),
+		() => setGamestateAction(-1),
 		[setGamestateAction],
 	);
 	const onLielaisClick = useCallback(
-		() => setGamestateAction("Lielais"),
+		() => setGamestateAction(GameTypeEnum.Lielais),
 		[setGamestateAction],
 	);
 	const onZoleClick = useCallback(
-		() => setGamestateAction("Zole"),
+		() => setGamestateAction(GameTypeEnum.Zole),
 		[setGamestateAction],
 	);
 	const onMazaZoleClick = useCallback(
-		() => setGamestateAction("Mazā zole"),
+		() => setGamestateAction(GameTypeEnum.MazaZole),
 		[setGamestateAction],
 	);
 	return (
@@ -570,10 +570,10 @@ const GameTypeInfo: FC<{ gameType: GameType; index: number }> = ({
 	index,
 }) => {
 	const { gameResultZaudejaGaldinu, gameResultMazaZole } = useGameContext();
-	if (gameType.type === "Galdiņš") {
+	if (gameType.type === GameTypeEnum.Galdins) {
 		return (
 			<>
-				<div>{gameType.type}</div>
+				<GameTypeName gameType={gameType.type} />
 				<button
 					type="button"
 					onClick={() => gameResultZaudejaGaldinu(gameType, index)}
@@ -582,10 +582,13 @@ const GameTypeInfo: FC<{ gameType: GameType; index: number }> = ({
 				</button>
 			</>
 		);
-	} else if (gameType.type === "Mazā zole") {
+	} else if (
+		gameType.type === GameTypeEnum.MazaZole &&
+		gameType.player === index
+	) {
 		return (
 			<>
-				<div>{gameType.type}</div>
+				<GameTypeName gameType={gameType.type} />
 				<div>
 					<button
 						type="button"
@@ -604,11 +607,23 @@ const GameTypeInfo: FC<{ gameType: GameType; index: number }> = ({
 		);
 	}
 	if (gameType.player === index) {
-		return <div>{gameType.type}</div>;
+		return <GameTypeName gameType={gameType.type} />;
 	}
 	return null;
 };
 
+const GameTypeName: FC<{ gameType: GameTypeEnum }> = ({ gameType }) => {
+	if (gameType === GameTypeEnum.Galdins) {
+		return <div>Galdiņš</div>;
+	} else if (gameType === GameTypeEnum.MazaZole) {
+		return <div>Mazā zole</div>;
+	} else if (gameType === GameTypeEnum.Zole) {
+		return <div>Zole</div>;
+	} else if (gameType === GameTypeEnum.Lielais) {
+		return <div>Lielais zole</div>;
+	}
+	return null;
+};
 export const Route = createFileRoute("/game/$data")({
 	component: RouteComponent,
 	params: {

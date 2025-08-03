@@ -1,10 +1,11 @@
-import { compress as lzCompress, decompress as lzDecompress } from "lz-string";
+import {
+	compressToEncodedURIComponent,
+	decompressFromEncodedURIComponent,
+} from "lz-string";
 export function compress<T>(data: T): string {
-	return JSON.stringify(data);
-	return lzCompress(JSON.stringify(data));
+	return compressToEncodedURIComponent(JSON.stringify(data));
 }
 
 export function decompress<T>(data: string): T {
-	return JSON.parse(data) as T;
-	return JSON.parse(lzDecompress(data)) as T;
+	return JSON.parse(decompressFromEncodedURIComponent(data)) as T;
 }
