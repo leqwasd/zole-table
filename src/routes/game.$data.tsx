@@ -100,12 +100,12 @@ const GameTypeDisplay: FC<{
 
 	const sizeClasses = size === "md" ? "font-medium" : "";
 	const backgroundClasses = showBackground
-		? "text-emerald-200 font-medium mb-2"
+		? "text-emerald-200 font-medium"
 		: "";
 
 	if (showBackground) {
 		return (
-			<div className={backgroundClasses}>
+			<div className={backgroundClasses + " text-center"}>
 				<span className={getColorClass()}>{getGameTypeName()}</span>
 			</div>
 		);
@@ -385,7 +385,7 @@ export const PlayedGames: FC<{ games: GameWithScore[]; players: string[] }> = ({
 		[games, players.length],
 	);
 	return (
-		<div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-sm rounded-lg p-4 mb-4 shadow-lg border border-white/20">
+		<div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-sm rounded-lg p-4 shadow-lg border border-white/20">
 			<table className="w-full text-white">
 				<thead>
 					<tr className="border-b border-emerald-400/30">
@@ -492,8 +492,7 @@ const GameCell: FC<{ player: number; game: GameWithScore }> = ({
 
 const Diff: FC<{ diff: number }> = ({ diff }) => (
 	<span className="text-xs text-emerald-200 font-light">
-		({diff > 0 && "+"}
-		{diff})
+		({useMemo(() => (diff > 0 ? `+${diff}` : `${diff}`), [diff])})
 	</span>
 );
 
@@ -502,111 +501,25 @@ const GamePage: FC = () => {
 	const currentDealer =
 		(state.dealer + state.games.length) % state.players.length;
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-4 relative overflow-hidden">
-			{/* Background decorative elements */}
-			<div className="absolute inset-0 bg-gradient-to-t from-emerald-800/20 to-transparent"></div>
-			<div className="absolute top-1/4 -right-40 w-80 h-80 bg-emerald-400/8 rounded-full blur-3xl"></div>
-			<div className="absolute bottom-1/3 -left-40 w-96 h-96 bg-teal-400/8 rounded-full blur-3xl"></div>
-			<div className="absolute top-2/3 right-1/4 w-64 h-64 bg-emerald-300/6 rounded-full blur-2xl"></div>
-
-			<div className="max-w-6xl mx-auto relative z-10">
-				<h1 className="text-2xl font-bold text-white mb-4 text-center drop-shadow-lg">
-					Zole Calculator
-				</h1>
+		<div
+			className="min-h-screen bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-2"
+			data-component="GamePage"
+		>
+			<div className="max-w-6xl mx-auto relative z-10 flex flex-col gap-2">
 				<PlayedGames games={gamesWithScore} players={state.players} />
-				<FlexLayout className="gap-3 mb-4">
+				<FlexLayout className="gap-2">
 					{state.players.map((player, index) => (
 						<CurrentGamePlayer
 							key={index}
 							player={player}
-							index={index}
-							dealer={currentDealer}
+							playerIndex={index}
+							currentDealer={currentDealer}
 							playerCount={state.players.length}
 							preGameActions={state.preGameActions}
-							gameType={state.gameType}
+							game={state.gameType}
 						/>
 					))}
 				</FlexLayout>
-				{state.gameType != null && (
-					<GameResults gameType={state.gameType} />
-				)}
-			</div>
-		</div>
-	);
-};
-const GameResults: FC<{ gameType: GameType }> = ({ gameType }) => {
-	const { gameResultLielais } = useGameContext();
-	if (
-		gameType[0] === GameTypeEnum.Galdins ||
-		gameType[0] === GameTypeEnum.MazaZole
-	) {
-		return null;
-	}
-
-	return (
-		<div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-sm rounded-lg p-4 shadow-lg border border-white/20">
-			<h3 className="text-lg font-semibold text-white mb-3 text-center">
-				Spēles rezultāts
-			</h3>
-			<div className="flex gap-3">
-				<div className="flex-1 flex flex-col gap-2">
-					<h4 className="text-emerald-200 font-medium text-sm text-center mb-1">
-						Uzvarējis
-					</h4>
-					<ResultButton
-						variant="win"
-						onClick={() =>
-							gameResultLielais(gameType, ZoleWinResult.win61)
-						}
-					>
-						61 - 90 acīs
-					</ResultButton>
-					<ResultButton
-						variant="win"
-						onClick={() =>
-							gameResultLielais(gameType, ZoleWinResult.win91)
-						}
-					>
-						91+ acīs
-					</ResultButton>
-					<ResultButton
-						variant="win"
-						onClick={() =>
-							gameResultLielais(gameType, ZoleWinResult.winAll)
-						}
-					>
-						Visi stiķi
-					</ResultButton>
-				</div>
-				<div className="flex-1 flex flex-col gap-2">
-					<h4 className="text-emerald-200 font-medium text-sm text-center mb-1">
-						Zaudējis
-					</h4>
-					<ResultButton
-						variant="lose"
-						onClick={() =>
-							gameResultLielais(gameType, ZoleLoseResult.lost30)
-						}
-					>
-						≤30 acīs
-					</ResultButton>
-					<ResultButton
-						variant="lose"
-						onClick={() =>
-							gameResultLielais(gameType, ZoleLoseResult.lost60)
-						}
-					>
-						31 - 60 acīs
-					</ResultButton>
-					<ResultButton
-						variant="lose"
-						onClick={() =>
-							gameResultLielais(gameType, ZoleLoseResult.lostAll)
-						}
-					>
-						0 stiķi
-					</ResultButton>
-				</div>
 			</div>
 		</div>
 	);
@@ -614,56 +527,83 @@ const GameResults: FC<{ gameType: GameType }> = ({ gameType }) => {
 
 const CurrentGamePlayer: FC<{
 	player: string;
-	index: number;
-	dealer: number;
+	playerIndex: number;
+	currentDealer: number;
 	playerCount: number;
 	preGameActions: GameStateAction[];
-	gameType: GameType | null;
-}> = ({ player, index, dealer, playerCount, preGameActions, gameType }) => {
-	const currentActionCount = preGameActions.length;
+	game: GameType | null;
+}> = ({
+	player,
+	playerIndex,
+	currentDealer,
+	playerCount,
+	preGameActions,
+	game,
+}) => {
 	const shouldGiveAction =
-		gameType == null &&
-		(dealer + currentActionCount + 1) % playerCount === index;
+		game == null &&
+		(currentDealer + preGameActions.length + 1) % playerCount ===
+			playerIndex;
 
 	return (
-		<div className="flex-1 flex flex-col items-center bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-lg p-4 min-h-[200px] shadow-lg border border-white/20">
-			<div className="text-white font-semibold text-lg mb-2">
+		<div
+			className="flex-1 flex flex-col gap-2 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-lg p-3 min-h-[200px] shadow-lg border border-white/20"
+			data-component="CurrentGamePlayer"
+		>
+			<div className="text-white font-semibold text-lg text-center">
 				{player}
 			</div>
-			<Roka dealer={dealer} playerCount={playerCount} index={index} />
+			<Roka
+				currentDealer={currentDealer}
+				playerCount={playerCount}
+				playerIndex={playerIndex}
+			/>
 
-			{shouldGiveAction && <Actions />}
+			{shouldGiveAction && <PreGameActions />}
 
-			{gameType != null && (
-				<GameTypeInfo gameType={gameType} index={index} />
+			{game != null && (
+				<GameActions
+					game={game}
+					playerIndex={playerIndex}
+					playerCount={playerCount}
+					currentDealer={currentDealer}
+				/>
 			)}
 		</div>
 	);
 };
 
-const Roka: FC<{ dealer: number; playerCount: number; index: number }> = ({
-	dealer,
-	playerCount,
-	index,
-}) => {
-	let text: string | null = dealer === index ? "(Dalītājs) " : "";
-	if ((dealer + 1) % playerCount === index) {
+const Roka: FC<{
+	currentDealer: number;
+	playerCount: number;
+	playerIndex: number;
+}> = ({ currentDealer, playerCount, playerIndex }) => {
+	let text: string | null =
+		currentDealer === playerIndex ? "(Dalītājs) " : "";
+	if ((currentDealer + 1) % playerCount === playerIndex) {
 		text += "1. roka";
-	} else if ((dealer + 2) % playerCount === index) {
+	} else if ((currentDealer + 2) % playerCount === playerIndex) {
 		text += "2. roka";
-	} else if ((dealer + 3) % playerCount === index) {
+	} else if ((currentDealer + 3) % playerCount === playerIndex) {
 		text += "3. roka";
 	}
 	if (text == "") {
 		return null;
 	}
-	return <div className="text-emerald-200 text-sm mb-2">{text}</div>;
+	return (
+		<div
+			className="text-emerald-200 text-sm text-center"
+			data-component="Roka"
+		>
+			{text}
+		</div>
+	);
 };
 
-const Actions: FC = () => {
+const PreGameActions: FC = () => {
 	const { setGamestateAction } = useGameContext();
 	return (
-		<div className="flex flex-col gap-2 w-full">
+		<div className="flex flex-col gap-2" data-component="Actions">
 			<ActionButton variant="red" onClick={() => setGamestateAction(-1)}>
 				Garām
 			</ActionButton>
@@ -689,55 +629,150 @@ const Actions: FC = () => {
 	);
 };
 
-const GameTypeInfo: FC<{ gameType: GameType; index: number }> = ({
-	gameType,
-	index,
-}) => {
-	const { gameResultZaudejaGaldinu, gameResultMazaZole } = useGameContext();
-	if (gameType[0] === GameTypeEnum.Galdins) {
-		return (
-			<div className="flex flex-col items-center w-full">
-				<GameTypeDisplay gameType={gameType[0]} showBackground={true} />
+const GameActions: FC<{
+	game: GameType;
+	playerIndex: number;
+	playerCount: number;
+	currentDealer: number;
+}> = ({ game, playerIndex, playerCount, currentDealer }) => {
+	const isPlayerOutsideGame =
+		playerCount === 4 && playerIndex === currentDealer;
+	if (isPlayerOutsideGame) {
+		// Player is not in the game, no result to show
+		return null;
+	}
+	switch (game[0]) {
+		case GameTypeEnum.Galdins:
+			return <GameActionsGaldins game={game} playerIndex={playerIndex} />;
+		case GameTypeEnum.MazaZole:
+			return (
+				<GameActionsMazaZole game={game} playerIndex={playerIndex} />
+			);
+		case GameTypeEnum.Lielais:
+		case GameTypeEnum.Zole:
+			return <GameActionsLielais game={game} playerIndex={playerIndex} />;
+		default:
+			return null;
+	}
+};
+
+const GameActionsGaldins: FC<{
+	game: GameTypeGaldins;
+	playerIndex: number;
+}> = ({ game, playerIndex }) => {
+	const { gameResultZaudejaGaldinu } = useGameContext();
+	return (
+		<>
+			<GameTypeDisplay gameType={game[0]} showBackground={true} />
+			<ResultButton
+				variant="lose"
+				className="w-full"
+				onClick={() => gameResultZaudejaGaldinu(game, playerIndex)}
+			>
+				Zaudēja
+			</ResultButton>
+		</>
+	);
+};
+const GameActionsMazaZole: FC<{
+	game: GameTypeMazaZole;
+	playerIndex: number;
+}> = ({ game, playerIndex }) => {
+	const { gameResultMazaZole } = useGameContext();
+	if (game[1] !== playerIndex) {
+		// Player is not the one who played Maza Zole, no result to show
+		return null;
+	}
+	return (
+		<>
+			<GameTypeDisplay gameType={game[0]} showBackground={true} />
+			<div className="flex flex-col gap-2">
+				<ResultButton
+					variant="win"
+					className="flex-1 py-2 px-3"
+					onClick={() => gameResultMazaZole(game, true)}
+				>
+					Uzvarēja
+				</ResultButton>
 				<ResultButton
 					variant="lose"
-					className="w-full"
-					onClick={() => gameResultZaudejaGaldinu(gameType, index)}
+					className="flex-1 py-2 px-3"
+					onClick={() => gameResultMazaZole(game, false)}
 				>
 					Zaudēja
 				</ResultButton>
 			</div>
-		);
-	} else if (gameType[0] === GameTypeEnum.MazaZole && gameType[1] === index) {
-		return (
-			<div className="flex flex-col items-center w-full">
-				<GameTypeDisplay gameType={gameType[0]} showBackground={true} />
-				<div className="flex gap-2 w-full">
+		</>
+	);
+};
+const GameActionsLielais: FC<{
+	game: GameTypeLielais | GameTypeZole;
+	playerIndex: number;
+}> = ({ game, playerIndex }) => {
+	const { gameResultLielais } = useGameContext();
+	if (game[1] !== playerIndex) {
+		// Player is not the one who played Zole or Lielais, no result to show
+		return null;
+	}
+	return (
+		<>
+			<GameTypeDisplay gameType={game[0]} showBackground={true} />
+			<div className="flex gap-2">
+				<div className="flex-1 flex flex-col gap-2">
 					<ResultButton
-						variant="lose"
-						className="flex-1 py-2 px-3"
-						onClick={() => gameResultMazaZole(gameType, false)}
+						variant="win"
+						onClick={() =>
+							gameResultLielais(game, ZoleWinResult.win61)
+						}
 					>
-						Zaudēja
+						61 - 90 acis
 					</ResultButton>
 					<ResultButton
 						variant="win"
-						className="flex-1 py-2 px-3"
-						onClick={() => gameResultMazaZole(gameType, true)}
+						onClick={() =>
+							gameResultLielais(game, ZoleWinResult.win91)
+						}
 					>
-						Uzvarēja
+						91+ acis
+					</ResultButton>
+					<ResultButton
+						variant="win"
+						onClick={() =>
+							gameResultLielais(game, ZoleWinResult.winAll)
+						}
+					>
+						Visi stiķi
+					</ResultButton>
+				</div>
+				<div className="flex-1 flex flex-col gap-2">
+					<ResultButton
+						variant="lose"
+						onClick={() =>
+							gameResultLielais(game, ZoleLoseResult.lost30)
+						}
+					>
+						≤30 acis
+					</ResultButton>
+					<ResultButton
+						variant="lose"
+						onClick={() =>
+							gameResultLielais(game, ZoleLoseResult.lost60)
+						}
+					>
+						31 - 60 acis
+					</ResultButton>
+					<ResultButton
+						variant="lose"
+						onClick={() =>
+							gameResultLielais(game, ZoleLoseResult.lostAll)
+						}
+					>
+						0 stiķi
 					</ResultButton>
 				</div>
 			</div>
-		);
-	}
-	if (gameType[1] === index) {
-		return (
-			<div className="text-emerald-200 font-medium">
-				<GameTypeDisplay gameType={gameType[0]} />
-			</div>
-		);
-	}
-	return null;
+		</>
+	);
 };
 
 export const Route = createFileRoute("/game/$data")({
