@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as HistoryRouteImport } from './routes/history'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SetupChar123DataChar125RouteImport } from './routes/setup.{-$data}'
 import { Route as GameDataRouteImport } from './routes/game.$data'
 
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,36 +37,47 @@ const GameDataRoute = GameDataRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/history': typeof HistoryRoute
   '/game/$data': typeof GameDataRoute
   '/setup/{-$data}': typeof SetupChar123DataChar125Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/history': typeof HistoryRoute
   '/game/$data': typeof GameDataRoute
   '/setup/{-$data}': typeof SetupChar123DataChar125Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/history': typeof HistoryRoute
   '/game/$data': typeof GameDataRoute
   '/setup/{-$data}': typeof SetupChar123DataChar125Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/game/$data' | '/setup/{-$data}'
+  fullPaths: '/' | '/history' | '/game/$data' | '/setup/{-$data}'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/game/$data' | '/setup/{-$data}'
-  id: '__root__' | '/' | '/game/$data' | '/setup/{-$data}'
+  to: '/' | '/history' | '/game/$data' | '/setup/{-$data}'
+  id: '__root__' | '/' | '/history' | '/game/$data' | '/setup/{-$data}'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HistoryRoute: typeof HistoryRoute
   GameDataRoute: typeof GameDataRoute
   SetupChar123DataChar125Route: typeof SetupChar123DataChar125Route
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HistoryRoute: HistoryRoute,
   GameDataRoute: GameDataRoute,
   SetupChar123DataChar125Route: SetupChar123DataChar125Route,
 }

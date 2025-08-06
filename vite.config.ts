@@ -13,4 +13,9 @@ export default defineConfig({
 		react(),
 		tailwindcss(),
 	],
+	base: "/zole-table/", // Updated to match your repository name
+	build: {
+		outDir: "dist",
+		assetsDir: "assets",
+	},
 });

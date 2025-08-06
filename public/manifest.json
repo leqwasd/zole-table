@@ -1,0 +1,20 @@
+{
+	"name": "Zolītes punktu tabula",
+	"short_name": "Zolīte",
+	"description": "Moderns punktu tabula zoles spēles rezultātu uzskaitei",
+	"start_url": "/zole-table/",
+	"display": "standalone",
+	"background_color": "#059669",
+	"theme_color": "#059669",
+	"orientation": "portrait-primary",
+	"categories": ["games", "utilities"],
+	"lang": "lv",
+	"icons": [
+		{
+			"src": "/favicon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+			"purpose": "any maskable"
+		}
+	]
+}

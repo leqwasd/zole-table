@@ -33,7 +33,7 @@ export type GameState = {
 	players: string[];
 	dealer: number;
 	games?: Game[];
-	preGameActions?: GameStateAction[];
+	preGameActions?: GameTypeEnum.Galdins[];
 	gameType?: GameType | null;
 };
 export type Game =

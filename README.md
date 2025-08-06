@@ -1,54 +1,89 @@
-# React + TypeScript + Vite
+# 🃏 Zolītes punktu tabula
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive web application for tracking scores in the traditional Latvian card game "Zole". Built with React, TypeScript, and Tailwind CSS.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Score Tracking**: Keep track of game scores for 3-4 players
+- **Game History**: View complete game history with detailed results
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **Local Storage**: Game data is automatically saved locally
+- **URL Sharing**: Share games via URL compression
+- **Beautiful UI**: Modern gradient design with smooth animations
 
-## Expanding the ESLint configuration
+## 🎮 Game Types Supported
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Galdiņš** (Table) - when all players pass
+- **Mazā Zole** (Small Zole) - simplified version
+- **Zole** - standard game
+- **Lielais** (Big One) - advanced game
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 🚀 Live Demo
+
+Visit the live application: [Your GitHub Pages URL here]
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React 19, TypeScript
+- **Routing**: TanStack Router with hash-based routing
+- **Styling**: Tailwind CSS 4.0
+- **Build Tool**: Vite
+- **Deployment**: GitHub Pages
+
+## 🏃‍♂️ Quick Start
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/leqwasd/zole-table.git
+
+# Navigate to project directory
+cd zole-table
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run start
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Building for Production
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+# Create production build
+npm run build
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+# Preview production build
+npm run preview
 ```
+
+## 📱 How to Use
+
+1. **Start New Game**: Click "Jauna spēle" to begin
+2. **Select Players**: Choose 3 or 4 players
+3. **Enter Names**: Add player names
+4. **Choose Dealer**: Select the starting dealer
+5. **Play**: Make game actions and record results
+6. **Track Scores**: View real-time score updates
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## 🎯 About Zole
+
+Zole is a traditional Latvian card game, typically played with 3-4 players. This score table helps track the complex scoring system of the game, making it easier to focus on gameplay rather than manual score calculations.
+
+---
+
+**Made with ❤️ for the Latvian card game community**
