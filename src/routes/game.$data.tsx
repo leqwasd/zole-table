@@ -1,10 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createContext, FC, useCallback, useContext, useMemo } from "react";
+import {
+	createContext,
+	FC,
+	PropsWithChildren,
+	useCallback,
+	useContext,
+	useMemo,
+} from "react";
 import { decompress, compress } from "../utils";
 import {
 	Game,
 	GameState,
-	GameStateAction,
 	GameType,
 	GameTypeEnum,
 	GameTypeGaldins,
@@ -16,23 +22,35 @@ import {
 	ZoleWinResult,
 } from "../types";
 import { FlexLayout } from "../Pages/Components/FlexLayout";
-
+const variantClasses = new Map<GameTypeEnum, string>([
+	[
+		GameTypeEnum.Galdins,
+		"hover:bg-orange-400/20 bg-orange-400/10 text-white border-orange-500 hover:border-orange-400",
+	],
+	[
+		GameTypeEnum.MazaZole,
+		"hover:bg-red-400/20 bg-red-400/10 text-white border-red-500 hover:border-red-400",
+	],
+	[
+		GameTypeEnum.Zole,
+		"hover:bg-green-400/20 bg-green-400/10 text-white border-green-500 hover:border-green-400",
+	],
+	[
+		GameTypeEnum.Lielais,
+		"hover:bg-blue-400/20 bg-blue-400/10 text-white border-blue-500 hover:border-blue-400",
+	],
+]);
 // Button Components
-const ActionButton: FC<{
-	onClick: () => void;
-	variant: "red" | "purple" | "green";
-	children: React.ReactNode;
-}> = ({ onClick, variant, children }) => {
-	const variantClasses = {
-		red: "hover:bg-red-500/30 text-red-100 border-red-400 hover:border-red-300",
-		purple: "hover:bg-purple-500/30 text-purple-100 border-purple-400 hover:border-purple-300",
-		green: "hover:bg-green-500/30 text-green-100 border-green-400 hover:border-green-300",
-	};
-
+const ActionButton: FC<
+	PropsWithChildren<{
+		onClick: () => void;
+		gameType: GameTypeEnum;
+	}>
+> = ({ onClick, children, gameType }) => {
 	return (
 		<button
 			type="button"
-			className={`bg-transparent hover:text-white py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300 shadow-md hover:shadow-lg border-2 ${variantClasses[variant]}`}
+			className={`hover:text-white py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300 shadow-md hover:shadow-lg border-2 ${variantClasses.get(gameType)}`}
 			onClick={onClick}
 		>
 			{children}
@@ -40,81 +58,44 @@ const ActionButton: FC<{
 	);
 };
 
-const ResultButton: FC<{
-	onClick: () => void;
-	variant: "win" | "lose";
-	children: React.ReactNode;
-	className?: string;
-}> = ({ onClick, variant, children, className = "" }) => {
-	const variantClasses = {
-		win: "bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800",
-		lose: "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800",
-	};
-
-	return (
-		<button
-			type="button"
-			className={`${variantClasses[variant]} text-white py-2 px-4 rounded-lg font-medium text-sm transition-all duration-300 shadow-md hover:shadow-lg ${className}`}
-			onClick={onClick}
-		>
-			{children}
-		</button>
-	);
-};
-
+function getGameTypeName(gameType: GameTypeEnum) {
+	switch (gameType) {
+		case GameTypeEnum.Galdins:
+			return "Galdiņš";
+		case GameTypeEnum.MazaZole:
+			return "Mazā zole";
+		case GameTypeEnum.Zole:
+			return "Zole";
+		case GameTypeEnum.Lielais:
+			return "Lielais";
+		default:
+			return "";
+	}
+}
+function getColorClass(gameType: GameTypeEnum) {
+	switch (gameType) {
+		case GameTypeEnum.Galdins:
+			return "text-orange-500";
+		case GameTypeEnum.MazaZole:
+			return "text-red-500";
+		case GameTypeEnum.Zole:
+			return "text-green-500";
+		case GameTypeEnum.Lielais:
+			return "text-blue-500";
+		default:
+			return "text-white";
+	}
+}
 // Game Type Display Component
 const GameTypeDisplay: FC<{
 	gameType: GameTypeEnum;
-	size?: "sm" | "md";
-	showBackground?: boolean;
-}> = ({ gameType, size = "sm", showBackground = false }) => {
-	const getColorClass = () => {
-		switch (gameType) {
-			case GameTypeEnum.Galdins:
-				return "text-red-400";
-			case GameTypeEnum.MazaZole:
-				return "text-red-400";
-			case GameTypeEnum.Zole:
-				return "text-green-400";
-			case GameTypeEnum.Lielais:
-				return "text-purple-400";
-			default:
-				return "text-white";
-		}
-	};
-
-	const getGameTypeName = () => {
-		switch (gameType) {
-			case GameTypeEnum.Galdins:
-				return "Galdiņš";
-			case GameTypeEnum.MazaZole:
-				return "Mazā zole";
-			case GameTypeEnum.Zole:
-				return "Zole";
-			case GameTypeEnum.Lielais:
-				return "Lielais";
-			default:
-				return "";
-		}
-	};
-
-	const sizeClasses = size === "md" ? "font-medium" : "";
-	const backgroundClasses = showBackground
-		? "text-emerald-200 font-medium"
-		: "";
-
-	if (showBackground) {
-		return (
-			<div className={backgroundClasses + " text-center"}>
-				<span className={getColorClass()}>{getGameTypeName()}</span>
-			</div>
-		);
-	}
-
+}> = ({ gameType }) => {
 	return (
-		<span className={`${getColorClass()} ${sizeClasses}`}>
-			{getGameTypeName()}
-		</span>
+		<div className={"font-medium text-center"}>
+			<span className={getColorClass(gameType)}>
+				{getGameTypeName(gameType)}
+			</span>
+		</div>
 	);
 };
 
@@ -122,7 +103,7 @@ const GameContext = createContext({} as GameContext);
 type GameContext = {
 	state: Required<GameState>;
 	gamesWithScore: GameWithScore[];
-	setGamestateAction(action: GameStateAction): void;
+	setGamestateAction(action: GameTypeEnum): void;
 	gameResultZaudejaGaldinu(gameType: GameTypeGaldins, player: number): void;
 	gameResultMazaZole(gameType: GameTypeMazaZole, result: boolean): void;
 	gameResultLielais(
@@ -134,11 +115,10 @@ function useGameStateInContext(): Required<GameState> {
 	const { data } = Route.useParams();
 	return useMemo(
 		() => ({
+			...data,
 			games: data.games ?? [],
 			preGameActions: data.preGameActions ?? [],
 			gameType: data.gameType ?? null,
-			players: data.players,
-			dealer: data.dealer,
 		}),
 		[data],
 	);
@@ -173,8 +153,8 @@ const RouteComponent: FC = () => {
 	}, [state]);
 	const navigate = useNavigateGame();
 	const setGamestateAction = useCallback(
-		(action: GameStateAction) => {
-			if (action === -1) {
+		(action: GameTypeEnum) => {
+			if (action === GameTypeEnum.Galdins) {
 				if (state.preGameActions.length === 2) {
 					return navigate({
 						...state,
@@ -385,7 +365,7 @@ export const PlayedGames: FC<{ games: GameWithScore[]; players: string[] }> = ({
 		[games, players.length],
 	);
 	return (
-		<div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-sm rounded-lg p-4 shadow-lg border border-white/20">
+		<div className="bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg border border-white/20">
 			<table className="w-full text-white">
 				<thead>
 					<tr className="border-b border-emerald-400/30">
@@ -407,7 +387,7 @@ export const PlayedGames: FC<{ games: GameWithScore[]; players: string[] }> = ({
 							key={i}
 							className={
 								i % players.length === players.length - 1
-									? "border-b border-emerald-400/20"
+									? "border-b border-emerald-400/40"
 									: ""
 							}
 						>
@@ -418,10 +398,7 @@ export const PlayedGames: FC<{ games: GameWithScore[]; players: string[] }> = ({
 								<GameCell key={j} player={j} game={game} />
 							))}
 							<td className="py-1 text-center text-emerald-200 text-sm">
-								<GameTypeDisplay
-									gameType={game.game[0]}
-									size="sm"
-								/>
+								<GameTypeDisplay gameType={game.game[0]} />
 							</td>
 						</tr>
 					))}
@@ -505,9 +482,9 @@ const GamePage: FC = () => {
 			className="min-h-screen bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-2"
 			data-component="GamePage"
 		>
-			<div className="max-w-6xl mx-auto relative z-10 flex flex-col gap-2">
+			<div className="max-w-6xl mx-auto relative z-10 flex flex-col gap-3">
 				<PlayedGames games={gamesWithScore} players={state.players} />
-				<FlexLayout className="gap-2">
+				<FlexLayout className="gap-3">
 					{state.players.map((player, index) => (
 						<CurrentGamePlayer
 							key={index}
@@ -530,7 +507,7 @@ const CurrentGamePlayer: FC<{
 	playerIndex: number;
 	currentDealer: number;
 	playerCount: number;
-	preGameActions: GameStateAction[];
+	preGameActions: GameTypeEnum[];
 	game: GameType | null;
 }> = ({
 	player,
@@ -604,23 +581,26 @@ const PreGameActions: FC = () => {
 	const { setGamestateAction } = useGameContext();
 	return (
 		<div className="flex flex-col gap-2" data-component="Actions">
-			<ActionButton variant="red" onClick={() => setGamestateAction(-1)}>
+			<ActionButton
+				gameType={GameTypeEnum.Galdins}
+				onClick={() => setGamestateAction(GameTypeEnum.Galdins)}
+			>
 				Garām
 			</ActionButton>
 			<ActionButton
-				variant="purple"
+				gameType={GameTypeEnum.Lielais}
 				onClick={() => setGamestateAction(GameTypeEnum.Lielais)}
 			>
 				Lielais
 			</ActionButton>
 			<ActionButton
-				variant="green"
+				gameType={GameTypeEnum.Zole}
 				onClick={() => setGamestateAction(GameTypeEnum.Zole)}
 			>
 				Zole
 			</ActionButton>
 			<ActionButton
-				variant="red"
+				gameType={GameTypeEnum.MazaZole}
 				onClick={() => setGamestateAction(GameTypeEnum.MazaZole)}
 			>
 				Mazā zole
@@ -663,14 +643,13 @@ const GameActionsGaldins: FC<{
 	const { gameResultZaudejaGaldinu } = useGameContext();
 	return (
 		<>
-			<GameTypeDisplay gameType={game[0]} showBackground={true} />
-			<ResultButton
-				variant="lose"
-				className="w-full"
+			<GameTypeDisplay gameType={game[0]} />
+			<ActionButton
+				gameType={GameTypeEnum.MazaZole}
 				onClick={() => gameResultZaudejaGaldinu(game, playerIndex)}
 			>
 				Zaudēja
-			</ResultButton>
+			</ActionButton>
 		</>
 	);
 };
@@ -685,22 +664,20 @@ const GameActionsMazaZole: FC<{
 	}
 	return (
 		<>
-			<GameTypeDisplay gameType={game[0]} showBackground={true} />
+			<GameTypeDisplay gameType={game[0]} />
 			<div className="flex flex-col gap-2">
-				<ResultButton
-					variant="win"
-					className="flex-1 py-2 px-3"
+				<ActionButton
+					gameType={GameTypeEnum.Zole}
 					onClick={() => gameResultMazaZole(game, true)}
 				>
 					Uzvarēja
-				</ResultButton>
-				<ResultButton
-					variant="lose"
-					className="flex-1 py-2 px-3"
+				</ActionButton>
+				<ActionButton
+					gameType={GameTypeEnum.MazaZole}
 					onClick={() => gameResultMazaZole(game, false)}
 				>
 					Zaudēja
-				</ResultButton>
+				</ActionButton>
 			</div>
 		</>
 	);
@@ -716,65 +693,70 @@ const GameActionsLielais: FC<{
 	}
 	return (
 		<>
-			<GameTypeDisplay gameType={game[0]} showBackground={true} />
+			<GameTypeDisplay gameType={game[0]} />
 			<div className="flex gap-2">
 				<div className="flex-1 flex flex-col gap-2">
-					<ResultButton
-						variant="win"
+					<ActionButton
+						gameType={GameTypeEnum.Zole}
 						onClick={() =>
 							gameResultLielais(game, ZoleWinResult.win61)
 						}
 					>
 						61 - 90 acis
-					</ResultButton>
-					<ResultButton
-						variant="win"
+					</ActionButton>
+					<ActionButton
+						gameType={GameTypeEnum.Zole}
 						onClick={() =>
 							gameResultLielais(game, ZoleWinResult.win91)
 						}
 					>
 						91+ acis
-					</ResultButton>
-					<ResultButton
-						variant="win"
+					</ActionButton>
+					<ActionButton
+						gameType={GameTypeEnum.Zole}
 						onClick={() =>
 							gameResultLielais(game, ZoleWinResult.winAll)
 						}
 					>
 						Visi stiķi
-					</ResultButton>
+					</ActionButton>
 				</div>
 				<div className="flex-1 flex flex-col gap-2">
-					<ResultButton
-						variant="lose"
+					<ActionButton
+						gameType={GameTypeEnum.MazaZole}
 						onClick={() =>
 							gameResultLielais(game, ZoleLoseResult.lost30)
 						}
 					>
 						≤30 acis
-					</ResultButton>
-					<ResultButton
-						variant="lose"
+					</ActionButton>
+					<ActionButton
+						gameType={GameTypeEnum.MazaZole}
 						onClick={() =>
 							gameResultLielais(game, ZoleLoseResult.lost60)
 						}
 					>
 						31 - 60 acis
-					</ResultButton>
-					<ResultButton
-						variant="lose"
+					</ActionButton>
+					<ActionButton
+						gameType={GameTypeEnum.MazaZole}
 						onClick={() =>
 							gameResultLielais(game, ZoleLoseResult.lostAll)
 						}
 					>
 						0 stiķi
-					</ResultButton>
+					</ActionButton>
 				</div>
 			</div>
 		</>
 	);
 };
-
+function storeInLocalStorage(data: GameState | null) {
+	if (data?.meta?.id == null) {
+		return;
+	}
+	localStorage.setItem(`game-${data.meta.id}`, compress(data));
+}
 export const Route = createFileRoute("/game/$data")({
 	component: RouteComponent,
 	params: {
@@ -785,4 +767,6 @@ export const Route = createFileRoute("/game/$data")({
 			data: compress(params.data),
 		}),
 	},
+	onEnter: ({ params }) => storeInLocalStorage(params.data),
+	onStay: ({ params }) => storeInLocalStorage(params.data),
 });

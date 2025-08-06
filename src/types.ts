@@ -10,12 +10,6 @@ export const enum GameTypeEnum {
 	Lielais = 3,
 }
 
-export type GameStateAction =
-	| -1
-	| GameTypeEnum.Lielais
-	| GameTypeEnum.Zole
-	| GameTypeEnum.MazaZole;
-
 export type GameTypeGaldins = [gameType: GameTypeEnum.Galdins];
 export type GameTypeMazaZole = [
 	gameType: GameTypeEnum.MazaZole,
@@ -29,7 +23,13 @@ export type GameType =
 	| GameTypeZole
 	| GameTypeLielais;
 
+export type GameMeta = {
+	id: string;
+	date: string;
+};
+
 export type GameState = {
+	meta: GameMeta;
 	players: string[];
 	dealer: number;
 	games?: Game[];
@@ -67,5 +67,9 @@ export function convertGameStateFromSetup(setup: Setup3): GameState {
 	return {
 		players: setup[1],
 		dealer: setup[2],
+		meta: {
+			id: crypto.randomUUID(),
+			date: new Date().toISOString(),
+		},
 	};
 }
