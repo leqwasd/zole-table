@@ -75,15 +75,15 @@ function getGameTypeName(gameType: GameTypeEnum) {
 function getColorClass(gameType: GameTypeEnum) {
 	switch (gameType) {
 		case GameTypeEnum.Galdins:
-			return "text-orange-500";
+			return "text-orange-300 font-semibold";
 		case GameTypeEnum.MazaZole:
-			return "text-red-500";
+			return "text-red-300 font-semibold";
 		case GameTypeEnum.Zole:
-			return "text-green-500";
+			return "text-green-300 font-semibold";
 		case GameTypeEnum.Lielais:
-			return "text-blue-500";
+			return "text-blue-300 font-semibold";
 		default:
-			return "text-white";
+			return "text-white font-semibold";
 	}
 }
 // Game Type Display Component
