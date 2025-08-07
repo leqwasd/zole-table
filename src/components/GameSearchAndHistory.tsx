@@ -5,7 +5,7 @@ import { decompress } from "../utils";
 // Icons
 const SearchIcon: FC = () => (
 	<svg
-		className="w-5 h-5"
+		className="h-5 w-5"
 		fill="none"
 		stroke="currentColor"
 		viewBox="0 0 24 24"
@@ -111,14 +111,14 @@ const GameSearchAndHistory: FC = () => {
 	return (
 		<div className="space-y-6">
 			{/* Search and Filter Controls */}
-			<div className="bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-lg p-4 shadow-lg border border-white/20">
-				<h2 className="text-xl font-bold text-white mb-4">
+			<div className="rounded-lg border border-white/20 bg-gradient-to-br from-white/20 to-white/10 p-4 shadow-lg backdrop-blur-sm">
+				<h2 className="mb-4 text-xl font-bold text-white">
 					Spēļu vēsture
 				</h2>
 
 				{/* Search Bar */}
 				<div className="relative mb-4">
-					<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+					<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
 						<SearchIcon />
 					</div>
 					<input
@@ -126,14 +126,14 @@ const GameSearchAndHistory: FC = () => {
 						placeholder="Meklēt pēc spēlētāja vārda vai spēles ID..."
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
-						className="block w-full pl-10 pr-3 py-2 border border-white/30 rounded-lg bg-white/10 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+						className="block w-full rounded-lg border border-white/30 bg-white/10 py-2 pr-3 pl-10 text-white placeholder-white/60 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
 					/>
 				</div>
 
 				{/* Filter Controls */}
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
 					<div>
-						<label className="block text-sm font-medium text-white/80 mb-1">
+						<label className="mb-1 block text-sm font-medium text-white/80">
 							Spēlētājs
 						</label>
 						<input
@@ -141,18 +141,18 @@ const GameSearchAndHistory: FC = () => {
 							placeholder="Filtrēt pēc spēlētāja..."
 							value={playerFilter}
 							onChange={(e) => setPlayerFilter(e.target.value)}
-							className="block w-full px-3 py-2 border border-white/30 rounded-lg bg-white/10 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+							className="block w-full rounded-lg border border-white/30 bg-white/10 px-3 py-2 text-white placeholder-white/60 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
 						/>
 					</div>
 
 					<div>
-						<label className="block text-sm font-medium text-white/80 mb-1">
+						<label className="mb-1 block text-sm font-medium text-white/80">
 							Datums
 						</label>
 						<select
 							value={dateFilter}
 							onChange={(e) => setDateFilter(e.target.value)}
-							className="block w-full px-3 py-2 border border-white/30 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+							className="block w-full rounded-lg border border-white/30 bg-white/10 px-3 py-2 text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
 						>
 							<option value="all">Visas spēles</option>
 							<option value="today">Šodien</option>
@@ -162,7 +162,7 @@ const GameSearchAndHistory: FC = () => {
 					</div>
 
 					<div className="flex items-end">
-						<span className="text-white/80 text-sm">
+						<span className="text-sm text-white/80">
 							Atrasti: {filteredGames.length} no{" "}
 							{savedGames.length}
 						</span>
@@ -173,7 +173,7 @@ const GameSearchAndHistory: FC = () => {
 			{/* Games List */}
 			<div className="space-y-3">
 				{filteredGames.length === 0 ? (
-					<div className="bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-lg p-6 text-center shadow-lg border border-white/20">
+					<div className="rounded-lg border border-white/20 bg-gradient-to-br from-white/20 to-white/10 p-6 text-center shadow-lg backdrop-blur-sm">
 						<p className="text-white/60">
 							Nav atrasta neviena spēle
 						</p>
@@ -203,43 +203,43 @@ const GameHistoryCard: FC<{ game: SavedGame }> = ({ game }) => {
 	};
 
 	return (
-		<div className="bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-lg p-4 shadow-lg border border-white/20">
-			<div className="flex items-center justify-between mb-2">
+		<div className="rounded-lg border border-white/20 bg-gradient-to-br from-white/20 to-white/10 p-4 shadow-lg backdrop-blur-sm">
+			<div className="mb-2 flex items-center justify-between">
 				<div>
 					<h3 className="text-lg font-semibold text-white">
 						Spēle #{game.meta.id.slice(-8)}
 					</h3>
-					<p className="text-white/60 text-sm">
+					<p className="text-sm text-white/60">
 						{game.lastPlayed} • {game.totalGames} spēles
 					</p>
 				</div>
 				<div className="flex space-x-2">
 					<button
 						onClick={() => setIsExpanded(!isExpanded)}
-						className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-sm rounded-lg transition-colors"
+						className="rounded-lg bg-emerald-600 px-3 py-1 text-sm text-white transition-colors hover:bg-emerald-700"
 					>
 						{isExpanded ? "Paslēpt" : "Skatīt"}
 					</button>
 					<button
 						onClick={handleContinueGame}
-						className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+						className="rounded-lg bg-blue-600 px-3 py-1 text-sm text-white transition-colors hover:bg-blue-700"
 					>
 						Turpināt
 					</button>
 					<button
 						onClick={handleDeleteGame}
-						className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-colors"
+						className="rounded-lg bg-red-600 px-3 py-1 text-sm text-white transition-colors hover:bg-red-700"
 					>
 						Dzēst
 					</button>
 				</div>
 			</div>
 
-			<div className="flex flex-wrap gap-2 mb-2">
+			<div className="mb-2 flex flex-wrap gap-2">
 				{game.players.map((player, index) => (
 					<span
 						key={index}
-						className="px-2 py-1 bg-emerald-500/30 text-emerald-100 text-xs rounded-full"
+						className="rounded-full bg-emerald-500/30 px-2 py-1 text-xs text-emerald-100"
 					>
 						{player}
 					</span>
@@ -248,19 +248,19 @@ const GameHistoryCard: FC<{ game: SavedGame }> = ({ game }) => {
 
 			{isExpanded && (
 				<div className="mt-4 space-y-2">
-					<h4 className="text-white font-medium">
+					<h4 className="font-medium text-white">
 						Detalizēta informācija:
 					</h4>
 					<div className="grid grid-cols-2 gap-4 text-sm">
 						<div>
 							<span className="text-white/60">Spēles ID:</span>
-							<span className="text-white ml-2">
+							<span className="ml-2 text-white">
 								{game.meta.id}
 							</span>
 						</div>
 						<div>
 							<span className="text-white/60">Izveidots:</span>
-							<span className="text-white ml-2">
+							<span className="ml-2 text-white">
 								{new Date(game.meta.date).toLocaleString(
 									"lv-LV",
 								)}
@@ -270,7 +270,7 @@ const GameHistoryCard: FC<{ game: SavedGame }> = ({ game }) => {
 							<span className="text-white/60">
 								Spēlētāju skaits:
 							</span>
-							<span className="text-white ml-2">
+							<span className="ml-2 text-white">
 								{game.players.length}
 							</span>
 						</div>
@@ -278,7 +278,7 @@ const GameHistoryCard: FC<{ game: SavedGame }> = ({ game }) => {
 							<span className="text-white/60">
 								Pabeigtas spēles:
 							</span>
-							<span className="text-white ml-2">
+							<span className="ml-2 text-white">
 								{game.totalGames}
 							</span>
 						</div>

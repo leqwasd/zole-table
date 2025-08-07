@@ -5,12 +5,12 @@ import { GameState } from "../types";
 
 // Reusable Home Page Components
 const HomePageLayout: FC<{ children: ReactNode }> = ({ children }) => (
-	<div className="min-h-screen bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-4 flex items-center justify-center relative overflow-hidden">
+	<div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-4">
 		{/* Background decorative elements */}
 		<div className="absolute inset-0 bg-gradient-to-t from-emerald-800/30 to-transparent"></div>
-		<div className="absolute top-1/4 -right-32 w-96 h-96 bg-emerald-400/10 rounded-full blur-3xl"></div>
-		<div className="absolute bottom-1/4 -left-32 w-80 h-80 bg-teal-400/10 rounded-full blur-3xl"></div>
-		<div className="text-center relative z-10">{children}</div>
+		<div className="absolute top-1/4 -right-32 h-96 w-96 rounded-full bg-emerald-400/10 blur-3xl"></div>
+		<div className="absolute bottom-1/4 -left-32 h-80 w-80 rounded-full bg-teal-400/10 blur-3xl"></div>
+		<div className="relative z-10 text-center">{children}</div>
 	</div>
 );
 
@@ -94,14 +94,14 @@ const RecentGamesSection: FC = () => {
 	};
 
 	return (
-		<div className="mt-8 p-6 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-lg shadow-lg border border-white/20 max-w-lg mx-auto">
-			<div className="flex items-center justify-between mb-4">
+		<div className="mx-auto mt-8 max-w-lg rounded-lg border border-white/20 bg-gradient-to-br from-white/20 to-white/10 p-6 shadow-lg backdrop-blur-sm">
+			<div className="mb-4 flex items-center justify-between">
 				<h3 className="text-lg font-semibold text-white">
 					Pēdējās spēles
 				</h3>
 				<button
 					onClick={clearAllGames}
-					className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-colors"
+					className="rounded-lg bg-red-600 px-3 py-1 text-sm text-white transition-colors hover:bg-red-700"
 				>
 					Dzēst visas
 				</button>
@@ -110,13 +110,13 @@ const RecentGamesSection: FC = () => {
 				{recentGames.map((game) => (
 					<div
 						key={game.id}
-						className="flex items-center justify-between bg-white/10 rounded-lg p-3"
+						className="flex items-center justify-between rounded-lg bg-white/10 p-3"
 					>
 						<div>
-							<div className="text-white font-medium">
+							<div className="font-medium text-white">
 								{game.players.join(", ")}
 							</div>
-							<div className="text-emerald-200 text-sm">
+							<div className="text-sm text-emerald-200">
 								{game.date} • {game.totalGames} spēles
 							</div>
 						</div>
@@ -129,7 +129,7 @@ const RecentGamesSection: FC = () => {
 									window.location.href = `#/game/${encodeURIComponent(gameData)}`;
 								}
 							}}
-							className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-sm rounded-lg transition-colors"
+							className="rounded-lg bg-emerald-600 px-3 py-1 text-sm text-white transition-colors hover:bg-emerald-700"
 						>
 							Turpināt
 						</button>
@@ -143,11 +143,11 @@ const RecentGamesSection: FC = () => {
 const Index: FC = () => {
 	return (
 		<HomePageLayout>
-			<h1 className="text-4xl font-bold text-white mb-8 drop-shadow-lg">
+			<h1 className="mb-8 text-4xl font-bold text-white drop-shadow-lg">
 				Zolītes punktu tabula
 			</h1>
 
-			<div className="space-y-4 mb-8">
+			<div className="mb-8 space-y-4">
 				<HomePrimaryButton
 					to="/setup/{-$data}"
 					params={{ data: undefined }}

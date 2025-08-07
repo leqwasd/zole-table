@@ -16,14 +16,14 @@ const SetupPageLayout: FC<{ children: ReactNode; title: string }> = ({
 	children,
 	title,
 }) => (
-	<div className="min-h-screen bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-4 flex items-center justify-center relative overflow-hidden">
+	<div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-4">
 		{/* Background decorative elements */}
 		<div className="absolute inset-0 bg-gradient-to-t from-emerald-800/20 to-transparent"></div>
-		<div className="absolute top-1/3 right-0 w-72 h-72 bg-emerald-400/15 rounded-full blur-2xl"></div>
-		<div className="absolute bottom-0 left-1/4 w-64 h-64 bg-teal-400/15 rounded-full blur-2xl"></div>
+		<div className="absolute top-1/3 right-0 h-72 w-72 rounded-full bg-emerald-400/15 blur-2xl"></div>
+		<div className="absolute bottom-0 left-1/4 h-64 w-64 rounded-full bg-teal-400/15 blur-2xl"></div>
 
-		<div className="max-w-md w-full relative z-10">
-			<h1 className="text-3xl font-bold text-white mb-8 text-center drop-shadow-lg">
+		<div className="relative z-10 w-full max-w-md">
+			<h1 className="mb-8 text-center text-3xl font-bold text-white drop-shadow-lg">
 				{title}
 			</h1>
 			{children}
@@ -79,7 +79,7 @@ const SetupPrimaryButton: FC<{
 	<button
 		type={type}
 		onClick={onClick}
-		className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white py-3 px-6 rounded-lg font-medium text-lg transition-all duration-300 mt-6 shadow-lg hover:shadow-xl"
+		className="mt-6 w-full rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-3 text-lg font-medium text-white shadow-lg transition-all duration-300 hover:from-emerald-700 hover:to-emerald-800 hover:shadow-xl"
 	>
 		{children}
 	</button>
@@ -90,7 +90,7 @@ const SetupInput: FC<{ placeholder: string }> = ({ placeholder }) => (
 		type="text"
 		name="playername"
 		defaultValue={placeholder}
-		className="flex-1 bg-gradient-to-r from-white/25 to-white/15 backdrop-blur-sm border border-white/40 text-white text-lg rounded-lg focus:ring-2 focus:ring-emerald-300 focus:border-emerald-300 focus:from-white/35 focus:to-white/25 block w-full p-3 placeholder-white/70 transition-all duration-300 shadow-lg"
+		className="block w-full flex-1 rounded-lg border border-white/40 bg-gradient-to-r from-white/25 to-white/15 p-3 text-lg text-white placeholder-white/70 shadow-lg backdrop-blur-sm transition-all duration-300 focus:border-emerald-300 focus:from-white/35 focus:to-white/25 focus:ring-2 focus:ring-emerald-300"
 		required
 		placeholder={placeholder}
 	/>

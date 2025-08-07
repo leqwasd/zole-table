@@ -50,7 +50,7 @@ const ActionButton: FC<
 	return (
 		<button
 			type="button"
-			className={`hover:text-white py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300 shadow-md hover:shadow-lg border-2 ${variantClasses.get(gameType)}`}
+			className={`rounded-lg border-2 px-4 py-2 text-sm font-semibold shadow-md transition-all duration-300 hover:text-white hover:shadow-lg ${variantClasses.get(gameType)}`}
 			onClick={onClick}
 		>
 			{children}
@@ -91,7 +91,7 @@ const GameTypeDisplay: FC<{
 	gameType: GameTypeEnum;
 }> = ({ gameType }) => {
 	return (
-		<div className={"font-medium text-center"}>
+		<div className={"text-center font-medium"}>
 			<span className={getColorClass(gameType)}>
 				{getGameTypeName(gameType)}
 			</span>
@@ -365,7 +365,7 @@ export const PlayedGames: FC<{ games: GameWithScore[]; players: string[] }> = ({
 		[games, players.length],
 	);
 	return (
-		<div className="bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg border border-white/20">
+		<div className="rounded-lg border border-white/20 bg-gradient-to-br from-white/20 to-white/10 px-4 py-2 shadow-lg backdrop-blur-sm">
 			<table className="w-full text-white">
 				<thead>
 					<tr className="border-b border-emerald-400/30">
@@ -397,7 +397,7 @@ export const PlayedGames: FC<{ games: GameWithScore[]; players: string[] }> = ({
 							{players.map((_, j) => (
 								<GameCell key={j} player={j} game={game} />
 							))}
-							<td className="py-1 text-center text-emerald-200 text-sm">
+							<td className="py-1 text-center text-sm text-emerald-200">
 								<GameTypeDisplay gameType={game.game[0]} />
 							</td>
 						</tr>
@@ -409,7 +409,7 @@ export const PlayedGames: FC<{ games: GameWithScore[]; players: string[] }> = ({
 						{totals.map((total, i) => (
 							<th
 								key={i}
-								className="pt-2 text-center font-bold text-emerald-100 text-lg"
+								className="pt-2 text-center text-lg font-bold text-emerald-100"
 							>
 								{total}
 							</th>
@@ -458,7 +458,7 @@ const GameCell: FC<{ player: number; game: GameWithScore }> = ({
 }) => {
 	const gameResultClassName = useGameResultClassName(player, game);
 	return (
-		<td className={"text-center py-1 " + gameResultClassName}>
+		<td className={"py-1 text-center " + gameResultClassName}>
 			<span className="font-semibold text-white">
 				{game.scores[player]}
 			</span>{" "}
@@ -468,7 +468,7 @@ const GameCell: FC<{ player: number; game: GameWithScore }> = ({
 };
 
 const Diff: FC<{ diff: number }> = ({ diff }) => (
-	<span className="text-xs text-emerald-200 font-light">
+	<span className="text-xs font-light text-emerald-200">
 		({useMemo(() => (diff > 0 ? `+${diff}` : `${diff}`), [diff])})
 	</span>
 );
@@ -482,7 +482,7 @@ const GamePage: FC = () => {
 			className="min-h-screen bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-2"
 			data-component="GamePage"
 		>
-			<div className="max-w-6xl mx-auto relative z-10 flex flex-col gap-3">
+			<div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-3">
 				<PlayedGames games={gamesWithScore} players={state.players} />
 				<FlexLayout className="gap-3">
 					{state.players.map((player, index) => (
@@ -524,10 +524,10 @@ const CurrentGamePlayer: FC<{
 
 	return (
 		<div
-			className="flex-1 flex flex-col gap-2 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-lg p-3 min-h-[200px] shadow-lg border border-white/20"
+			className="flex min-h-[200px] flex-1 flex-col gap-2 rounded-lg border border-white/20 bg-gradient-to-br from-white/20 to-white/10 p-3 shadow-lg backdrop-blur-sm"
 			data-component="CurrentGamePlayer"
 		>
-			<div className="text-white font-semibold text-lg text-center">
+			<div className="text-center text-lg font-semibold text-white">
 				{player}
 			</div>
 			<Roka
@@ -569,7 +569,7 @@ const Roka: FC<{
 	}
 	return (
 		<div
-			className="text-emerald-200 text-sm text-center"
+			className="text-center text-sm text-emerald-200"
 			data-component="Roka"
 		>
 			{text}
@@ -695,7 +695,7 @@ const GameActionsLielais: FC<{
 		<>
 			<GameTypeDisplay gameType={game[0]} />
 			<div className="flex gap-2">
-				<div className="flex-1 flex flex-col gap-2">
+				<div className="flex flex-1 flex-col gap-2">
 					<ActionButton
 						gameType={GameTypeEnum.Zole}
 						onClick={() =>
@@ -721,7 +721,7 @@ const GameActionsLielais: FC<{
 						Visi stiķi
 					</ActionButton>
 				</div>
-				<div className="flex-1 flex flex-col gap-2">
+				<div className="flex flex-1 flex-col gap-2">
 					<ActionButton
 						gameType={GameTypeEnum.MazaZole}
 						onClick={() =>
