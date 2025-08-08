@@ -8,7 +8,7 @@ import {
 	ReactNode,
 } from "react";
 import { compress, decompress } from "../utils";
-import { FlexLayout } from "../Pages/Components/FlexLayout";
+import { FlexLayout } from "../components/FlexLayout";
 import { convertGameStateFromSetup, Setup1, Setup2, SetupData } from "../types";
 
 // Reusable Setup Page Components

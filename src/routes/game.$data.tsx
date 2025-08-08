@@ -21,7 +21,7 @@ import {
 	ZoleLoseResult,
 	ZoleWinResult,
 } from "../types";
-import { FlexLayout } from "../Pages/Components/FlexLayout";
+import { FlexLayout } from "../components/FlexLayout";
 const variantClasses = new Map<GameTypeEnum, string>([
 	[
 		GameTypeEnum.Galdins,
