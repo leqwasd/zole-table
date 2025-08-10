@@ -22,6 +22,9 @@ import {
 	ZoleWinResult,
 } from "../types";
 import { FlexLayout } from "../components/FlexLayout";
+import { TotalsTable } from "../components/TotalsTable";
+import { GameTypeDisplay } from "../components/GameTypeDisplay";
+import { PanelLight } from "../components/Panels/PanelLight";
 const variantClasses = new Map<GameTypeEnum, string>([
 	[
 		GameTypeEnum.Galdins,
@@ -55,47 +58,6 @@ const ActionButton: FC<
 		>
 			{children}
 		</button>
-	);
-};
-
-function getGameTypeName(gameType: GameTypeEnum) {
-	switch (gameType) {
-		case GameTypeEnum.Galdins:
-			return "Galdiņš";
-		case GameTypeEnum.MazaZole:
-			return "Mazā zole";
-		case GameTypeEnum.Zole:
-			return "Zole";
-		case GameTypeEnum.Lielais:
-			return "Lielais";
-		default:
-			return "";
-	}
-}
-function getColorClass(gameType: GameTypeEnum) {
-	switch (gameType) {
-		case GameTypeEnum.Galdins:
-			return "text-orange-300 font-semibold";
-		case GameTypeEnum.MazaZole:
-			return "text-red-300 font-semibold";
-		case GameTypeEnum.Zole:
-			return "text-green-300 font-semibold";
-		case GameTypeEnum.Lielais:
-			return "text-blue-300 font-semibold";
-		default:
-			return "text-white font-semibold";
-	}
-}
-// Game Type Display Component
-const GameTypeDisplay: FC<{
-	gameType: GameTypeEnum;
-}> = ({ gameType }) => {
-	return (
-		<div className={"text-center font-medium"}>
-			<span className={getColorClass(gameType)}>
-				{getGameTypeName(gameType)}
-			</span>
-		</div>
 	);
 };
 
@@ -353,148 +315,29 @@ const PointTable = {
 	ZoleLostJanos: -7,
 	ZoleLostBezstiki: -8,
 };
-export const PlayedGames: FC<{ games: GameWithScore[]; players: string[] }> = ({
-	games,
-	players,
-}) => {
-	const totals = useMemo(
-		() =>
-			games.length === 0
-				? new Array(players.length).fill(0)
-				: games[games.length - 1].scores,
-		[games, players.length],
-	);
-	return (
-		<div className="rounded-lg border border-white/20 bg-gradient-to-br from-white/20 to-white/10 px-4 py-2 shadow-lg backdrop-blur-sm">
-			<table className="w-full text-white">
-				<thead>
-					<tr className="border-b border-emerald-400/30">
-						<td className="pb-2 text-sm text-emerald-200">#</td>
-						{players.map((name, i) => (
-							<th
-								key={i}
-								className="pb-2 text-center font-semibold text-emerald-100"
-							>
-								{name}
-							</th>
-						))}
-						<td className="pb-2" />
-					</tr>
-				</thead>
-				<tbody>
-					{games.map((game, i) => (
-						<tr
-							key={i}
-							className={
-								i % players.length === players.length - 1
-									? "border-b border-emerald-400/40"
-									: ""
-							}
-						>
-							<td className="py-1 text-sm text-emerald-300">
-								{i + 1}
-							</td>
-							{players.map((_, j) => (
-								<GameCell key={j} player={j} game={game} />
-							))}
-							<td className="py-1 text-center text-sm text-emerald-200">
-								<GameTypeDisplay gameType={game.game[0]} />
-							</td>
-						</tr>
-					))}
-				</tbody>
-				<tfoot>
-					<tr className="border-t border-emerald-400/30">
-						<td className="pt-2 font-bold text-emerald-100">Σ</td>
-						{totals.map((total, i) => (
-							<th
-								key={i}
-								className="pt-2 text-center text-lg font-bold text-emerald-100"
-							>
-								{total}
-							</th>
-						))}
-						<td className="pt-2" />
-					</tr>
-				</tfoot>
-			</table>
-		</div>
-	);
-};
-
-function useGameResultClassName(
-	player: number,
-	gameWithScore: GameWithScore,
-): string {
-	const { game } = gameWithScore;
-	if (
-		(game[0] === GameTypeEnum.Lielais || game[0] === GameTypeEnum.Zole) &&
-		game[1] === player
-	) {
-		if (
-			game[2] === ZoleWinResult.win61 ||
-			game[2] === ZoleWinResult.win91 ||
-			game[2] === ZoleWinResult.winAll
-		) {
-			return "bg-green-500/30 border border-green-400/50";
-		} else {
-			return "bg-red-500/30 border border-red-400/50";
-		}
-	} else if (game[0] === GameTypeEnum.MazaZole && game[1] === player) {
-		if (game[2]) {
-			return "bg-green-500/30 border border-green-400/50";
-		} else {
-			return "bg-red-500/30 border border-red-400/50";
-		}
-	} else if (game[0] === GameTypeEnum.Galdins && game[1] === player) {
-		return "bg-red-500/30 border border-red-400/50";
-	}
-
-	return "";
-}
-const GameCell: FC<{ player: number; game: GameWithScore }> = ({
-	player,
-	game,
-}) => {
-	const gameResultClassName = useGameResultClassName(player, game);
-	return (
-		<td className={"py-1 text-center " + gameResultClassName}>
-			<span className="font-semibold text-white">
-				{game.scores[player]}
-			</span>{" "}
-			<Diff diff={game.diff[player]} />
-		</td>
-	);
-};
-
-const Diff: FC<{ diff: number }> = ({ diff }) => (
-	<span className="text-xs font-light text-emerald-200">
-		({useMemo(() => (diff > 0 ? `+${diff}` : `${diff}`), [diff])})
-	</span>
-);
 
 const GamePage: FC = () => {
 	const { state, gamesWithScore } = useGameContext();
 	const currentDealer =
 		(state.dealer + state.games.length) % state.players.length;
 	return (
-		<div data-component="GamePage">
-			<div className="relative mx-auto flex max-w-6xl flex-col gap-3">
-				<PlayedGames games={gamesWithScore} players={state.players} />
-				<FlexLayout className="gap-3">
-					{state.players.map((player, index) => (
-						<CurrentGamePlayer
-							key={index}
-							player={player}
-							playerIndex={index}
-							currentDealer={currentDealer}
-							playerCount={state.players.length}
-							preGameActions={state.preGameActions}
-							game={state.gameType}
-						/>
-					))}
-				</FlexLayout>
-			</div>
+		<div className="relative mx-auto flex max-w-6xl flex-col gap-3">
+			<PanelLight>
+				<TotalsTable games={gamesWithScore} players={state.players} />
+			</PanelLight>
+			<FlexLayout className="gap-3">
+				{state.players.map((player, index) => (
+					<CurrentGamePlayer
+						key={index}
+						player={player}
+						playerIndex={index}
+						currentDealer={currentDealer}
+						playerCount={state.players.length}
+						preGameActions={state.preGameActions}
+						game={state.gameType}
+					/>
+				))}
+			</FlexLayout>
 		</div>
 	);
 };
@@ -520,10 +363,7 @@ const CurrentGamePlayer: FC<{
 			playerIndex;
 
 	return (
-		<div
-			className="flex min-h-[200px] flex-1 flex-col gap-2 rounded-lg border border-white/20 bg-gradient-to-br from-white/20 to-white/10 p-3 shadow-lg backdrop-blur-sm"
-			data-component="CurrentGamePlayer"
-		>
+		<PanelLight className="flex min-h-[200px] flex-1 flex-col gap-2">
 			<div className="text-center text-lg font-semibold text-white">
 				{player}
 			</div>
@@ -543,7 +383,7 @@ const CurrentGamePlayer: FC<{
 					currentDealer={currentDealer}
 				/>
 			)}
-		</div>
+		</PanelLight>
 	);
 };
 

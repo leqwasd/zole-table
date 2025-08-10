@@ -17,3 +17,27 @@ button,
 a {
 	transition: all 0.2s ease-in-out;
 }
+@theme {
+	--animate-appear: appear 0.2s ease-in-out;
+	@keyframes appear {
+		from {
+			opacity: 0;
+			display: none;
+		}
+		to {
+			opacity: 1;
+			display: block;
+		}
+	}
+	--animate-vanish: vanish 0.2s ease-in-out;
+	@keyframes vanish {
+		from {
+			opacity: 1;
+			display: block;
+		}
+		to {
+			opacity: 0;
+			display: none;
+		}
+	}
+}

@@ -1,6 +1,7 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { HamburgerButton } from "./HamburgerButton";
+import { Overlay } from "./Overlay";
 
 export const Navbar: FC = () => {
 	const pageYOffset = useRef(window.pageYOffset);
@@ -39,7 +40,7 @@ export const Navbar: FC = () => {
 	return (
 		<>
 			<nav
-				className={`fixed z-20 h-14 w-full border-b border-white/10 bg-gradient-to-r from-emerald-600/90 via-emerald-700/90 to-teal-700/90 shadow-lg backdrop-blur-sm transition-[top] ${className}`}
+				className={`fixed z-20 h-14 w-full border-b border-white/10 bg-gradient-to-r from-emerald-600/90 via-emerald-700/90 to-teal-700/90 shadow-lg transition-[top] ${className}`}
 			>
 				<div className="flex h-full items-center justify-between px-4">
 					<Link
@@ -54,18 +55,14 @@ export const Navbar: FC = () => {
 					/>
 				</div>
 			</nav>
-
-			{/* Mobile Menu Overlay */}
-			<div
-				className={`fixed inset-0 z-10 bg-gradient-to-br from-emerald-900/60 via-emerald-800/60 to-teal-900/60 backdrop-blur-xs transition-opacity duration-300 ${
-					isMenuOpen ? "opacity-100" : "pointer-events-none opacity-0"
-				}`}
+			<Overlay
 				onClick={() => setIsMenuOpen(false)}
+				visible={isMenuOpen}
 			/>
 
 			{/* Mobile Menu */}
 			<div
-				className={`fixed top-14 right-0 z-15 w-64 transform border-l border-white/10 bg-gradient-to-br from-emerald-600/95 via-emerald-700/95 to-teal-700/95 shadow-xl backdrop-blur-md transition-transform duration-300 ${
+				className={`fixed top-14 right-0 z-15 w-64 transform border-l border-white/10 bg-gradient-to-br from-emerald-600/95 via-emerald-700/95 to-teal-700/95 shadow-xl transition-transform duration-300 ${
 					isMenuOpen ? "translate-x-0" : "translate-x-full"
 				}`}
 			>

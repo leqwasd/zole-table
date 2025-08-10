@@ -16,64 +16,32 @@ const SetupPageLayout: FC<{ children: ReactNode; title: string }> = ({
 	children,
 	title,
 }) => (
-	<div className="relative flex items-center justify-center overflow-hidden p-4">
-		<div className="relative z-10 w-full max-w-md">
-			<h1 className="mb-8 text-center text-3xl font-bold text-white drop-shadow-lg">
-				{title}
-			</h1>
-			{children}
-		</div>
+	<div className="flex flex-col items-center justify-center p-4">
+		<h1 className="mb-8 text-center text-3xl font-bold text-white drop-shadow-lg">
+			{title}
+		</h1>
+		<div className="w-full max-w-md">{children}</div>
 	</div>
 );
 
 const SetupButton: FC<{
 	children: ReactNode;
-	size?: "sm" | "md" | "lg";
-	className?: string;
-	to?: string;
-	params?: Record<string, unknown>;
-	onClick?: () => void;
-	type?: "button" | "submit";
-}> = ({
-	children,
-	size = "md",
-	className = "",
-	to,
-	params,
-	onClick,
-	type = "button",
-}) => {
-	const sizeClasses = {
-		sm: "p-4 text-lg",
-		md: "p-8 text-xl",
-		lg: "p-12 text-4xl",
-	}[size];
-
-	const baseClasses = `flex-1 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm hover:from-white/30 hover:to-white/20 transition-all duration-300 font-bold text-white rounded-lg text-center shadow-lg hover:shadow-xl ${sizeClasses} ${className}`;
-
-	if (to) {
-		return (
-			<Link className={baseClasses} to={to} params={params}>
-				{children}
-			</Link>
-		);
-	}
-
-	return (
-		<button type={type} className={baseClasses} onClick={onClick}>
-			{children}
-		</button>
-	);
-};
+	data: SetupData;
+}> = ({ children, data }) => (
+	<Link
+		className="flex-1 rounded-lg bg-gradient-to-br from-white/20 to-white/10 p-12 text-center text-4xl font-bold text-white shadow-lg transition-all duration-300 hover:from-white/30 hover:to-white/20 hover:shadow-xl"
+		to="/new/{-$data}"
+		params={{ data }}
+	>
+		{children}
+	</Link>
+);
 
 const SetupPrimaryButton: FC<{
 	children: ReactNode;
-	type?: "button" | "submit";
-	onClick?: () => void;
-}> = ({ children, type = "button", onClick }) => (
+}> = ({ children }) => (
 	<button
-		type={type}
-		onClick={onClick}
+		type="submit"
 		className="mt-6 w-full rounded-lg bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-3 text-lg font-medium text-white shadow-lg transition-all duration-300 hover:from-emerald-700 hover:to-emerald-800 hover:shadow-xl"
 	>
 		{children}
@@ -85,7 +53,7 @@ const SetupInput: FC<{ placeholder: string }> = ({ placeholder }) => (
 		type="text"
 		name="playername"
 		defaultValue={placeholder}
-		className="block w-full flex-1 rounded-lg border border-white/40 bg-gradient-to-r from-white/25 to-white/15 p-3 text-lg text-white placeholder-white/70 shadow-lg backdrop-blur-sm transition-all duration-300 focus:border-emerald-300 focus:from-white/35 focus:to-white/25 focus:ring-2 focus:ring-emerald-300"
+		className="block w-full flex-1 rounded-lg border border-white/40 bg-gradient-to-r from-white/25 to-white/15 p-3 text-lg text-white placeholder-white/70 shadow-lg transition-all duration-300 focus:border-emerald-300 focus:from-white/35 focus:to-white/25 focus:ring-2 focus:ring-emerald-300"
 		required
 		placeholder={placeholder}
 	/>
@@ -115,20 +83,8 @@ const PlayerCountPage: FC = () => {
 	return (
 		<SetupPageLayout title="Izvēlies spēlētāju skaitu">
 			<FlexLayout className="gap-4">
-				<SetupButton
-					size="lg"
-					to="/new/{-$data}"
-					params={{ data: [3] }}
-				>
-					3
-				</SetupButton>
-				<SetupButton
-					size="lg"
-					to="/new/{-$data}"
-					params={{ data: [4] }}
-				>
-					4
-				</SetupButton>
+				<SetupButton data={[3]}>3</SetupButton>
+				<SetupButton data={[4]}>4</SetupButton>
 			</FlexLayout>
 		</SetupPageLayout>
 	);
@@ -169,7 +125,7 @@ const PlayerNamesPage: FC<{ setup: Setup1 }> = ({ setup }) => {
 						<SetupInput key={i} placeholder={placeholder} />
 					))}
 				</FlexLayout>
-				<SetupPrimaryButton type="submit">Turpināt</SetupPrimaryButton>
+				<SetupPrimaryButton>Turpināt</SetupPrimaryButton>
 			</form>
 		</SetupPageLayout>
 	);
@@ -179,11 +135,7 @@ const DealerSelectPage: FC<{ setup: Setup2 }> = ({ setup }) => {
 		<SetupPageLayout title="Izvēlies sākuma dalītāju">
 			<FlexLayout className="gap-4">
 				{setup[1].map((name, dealer) => (
-					<SetupButton
-						key={dealer}
-						to="/new/{-$data}"
-						params={{ data: [...setup, dealer] }}
-					>
+					<SetupButton key={dealer} data={[...setup, dealer]}>
 						{name}
 					</SetupButton>
 				))}

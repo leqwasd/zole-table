@@ -83,7 +83,7 @@ const RecentGamesSection: FC = () => {
 	};
 
 	return (
-		<div className="mx-auto mt-8 max-w-lg rounded-lg border border-white/20 bg-gradient-to-br from-white/20 to-white/10 p-6 shadow-lg backdrop-blur-sm">
+		<div className="mx-auto mt-8 max-w-lg rounded-lg border border-white/20 bg-gradient-to-br from-white/20 to-white/10 p-6 shadow-lg">
 			<div className="mb-4 flex items-center justify-between">
 				<h3 className="text-lg font-semibold text-white">
 					Pēdējās spēles

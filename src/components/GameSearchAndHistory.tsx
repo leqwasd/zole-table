@@ -1,6 +1,7 @@
 import { FC, useState, useMemo } from "react";
 import { GameState } from "../types";
 import { decompress } from "../utils";
+import { PanelLight } from "./Panels/PanelLight";
 
 // Icons
 const SearchIcon: FC = () => (
@@ -111,7 +112,7 @@ const GameSearchAndHistory: FC = () => {
 	return (
 		<div className="space-y-6">
 			{/* Search and Filter Controls */}
-			<div className="rounded-lg border border-white/20 bg-gradient-to-br from-white/20 to-white/10 p-4 shadow-lg backdrop-blur-sm">
+			<PanelLight>
 				<h2 className="mb-4 text-xl font-bold text-white">
 					Spēļu vēsture
 				</h2>
@@ -168,12 +169,12 @@ const GameSearchAndHistory: FC = () => {
 						</span>
 					</div>
 				</div>
-			</div>
+			</PanelLight>
 
 			{/* Games List */}
 			<div className="space-y-3">
 				{filteredGames.length === 0 ? (
-					<div className="rounded-lg border border-white/20 bg-gradient-to-br from-white/20 to-white/10 p-6 text-center shadow-lg backdrop-blur-sm">
+					<div className="rounded-lg border border-white/20 bg-gradient-to-br from-white/20 to-white/10 p-6 text-center shadow-lg">
 						<p className="text-white/60">
 							Nav atrasta neviena spēle
 						</p>
@@ -203,7 +204,7 @@ const GameHistoryCard: FC<{ game: SavedGame }> = ({ game }) => {
 	};
 
 	return (
-		<div className="rounded-lg border border-white/20 bg-gradient-to-br from-white/20 to-white/10 p-4 shadow-lg backdrop-blur-sm">
+		<PanelLight>
 			<div className="mb-2 flex items-center justify-between">
 				<div>
 					<h3 className="text-lg font-semibold text-white">
@@ -285,7 +286,7 @@ const GameHistoryCard: FC<{ game: SavedGame }> = ({ game }) => {
 					</div>
 				</div>
 			)}
-		</div>
+		</PanelLight>
 	);
 };
 
