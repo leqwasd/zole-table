@@ -478,11 +478,8 @@ const GamePage: FC = () => {
 	const currentDealer =
 		(state.dealer + state.games.length) % state.players.length;
 	return (
-		<div
-			className="min-h-screen bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-2"
-			data-component="GamePage"
-		>
-			<div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-3">
+		<div data-component="GamePage">
+			<div className="relative mx-auto flex max-w-6xl flex-col gap-3">
 				<PlayedGames games={gamesWithScore} players={state.players} />
 				<FlexLayout className="gap-3">
 					{state.players.map((player, index) => (
