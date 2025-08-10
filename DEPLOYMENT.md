@@ -82,7 +82,7 @@ npm run deploy
 ## URL Structure
 
 - **Homepage**: `https://leqwasd.github.io/zole-table/`
-- **New Game**: `https://leqwasd.github.io/zole-table/#/setup/`
+- **New Game**: `https://leqwasd.github.io/zole-table/#/new/`
 - **Game Play**: `https://leqwasd.github.io/zole-table/#/game/[gameData]`
 
 ## Local Development

@@ -16,12 +16,7 @@ const SetupPageLayout: FC<{ children: ReactNode; title: string }> = ({
 	children,
 	title,
 }) => (
-	<div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-4">
-		{/* Background decorative elements */}
-		<div className="absolute inset-0 bg-gradient-to-t from-emerald-800/20 to-transparent"></div>
-		<div className="absolute top-1/3 right-0 h-72 w-72 rounded-full bg-emerald-400/15 blur-2xl"></div>
-		<div className="absolute bottom-0 left-1/4 h-64 w-64 rounded-full bg-teal-400/15 blur-2xl"></div>
-
+	<div className="relative flex items-center justify-center overflow-hidden p-4">
 		<div className="relative z-10 w-full max-w-md">
 			<h1 className="mb-8 text-center text-3xl font-bold text-white drop-shadow-lg">
 				{title}
@@ -122,14 +117,14 @@ const PlayerCountPage: FC = () => {
 			<FlexLayout className="gap-4">
 				<SetupButton
 					size="lg"
-					to="/setup/{-$data}"
+					to="/new/{-$data}"
 					params={{ data: [3] }}
 				>
 					3
 				</SetupButton>
 				<SetupButton
 					size="lg"
-					to="/setup/{-$data}"
+					to="/new/{-$data}"
 					params={{ data: [4] }}
 				>
 					4
@@ -146,7 +141,7 @@ const PlayerNamesPage: FC<{ setup: Setup1 }> = ({ setup }) => {
 		(e) => {
 			e.preventDefault();
 			navigate({
-				to: "/setup/{-$data}",
+				to: "/new/{-$data}",
 				params: {
 					data: [
 						...setup,
@@ -186,7 +181,7 @@ const DealerSelectPage: FC<{ setup: Setup2 }> = ({ setup }) => {
 				{setup[1].map((name, dealer) => (
 					<SetupButton
 						key={dealer}
-						to="/setup/{-$data}"
+						to="/new/{-$data}"
 						params={{ data: [...setup, dealer] }}
 					>
 						{name}
@@ -197,7 +192,7 @@ const DealerSelectPage: FC<{ setup: Setup2 }> = ({ setup }) => {
 	);
 };
 
-export const Route = createFileRoute("/setup/{-$data}")({
+export const Route = createFileRoute("/new/{-$data}")({
 	component: RouteComponent,
 	params: {
 		parse: (params) => ({

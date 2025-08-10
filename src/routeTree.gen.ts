@@ -11,7 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SetupChar123DataChar125RouteImport } from './routes/setup.{-$data}'
+import { Route as NewChar123DataChar125RouteImport } from './routes/new.{-$data}'
 import { Route as GameDataRouteImport } from './routes/game.$data'
 
 const HistoryRoute = HistoryRouteImport.update({
@@ -24,9 +24,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SetupChar123DataChar125Route = SetupChar123DataChar125RouteImport.update({
-  id: '/setup/{-$data}',
-  path: '/setup/{-$data}',
+const NewChar123DataChar125Route = NewChar123DataChar125RouteImport.update({
+  id: '/new/{-$data}',
+  path: '/new/{-$data}',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GameDataRoute = GameDataRouteImport.update({
@@ -39,34 +39,34 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/history': typeof HistoryRoute
   '/game/$data': typeof GameDataRoute
-  '/setup/{-$data}': typeof SetupChar123DataChar125Route
+  '/new/{-$data}': typeof NewChar123DataChar125Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/history': typeof HistoryRoute
   '/game/$data': typeof GameDataRoute
-  '/setup/{-$data}': typeof SetupChar123DataChar125Route
+  '/new/{-$data}': typeof NewChar123DataChar125Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/history': typeof HistoryRoute
   '/game/$data': typeof GameDataRoute
-  '/setup/{-$data}': typeof SetupChar123DataChar125Route
+  '/new/{-$data}': typeof NewChar123DataChar125Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/history' | '/game/$data' | '/setup/{-$data}'
+  fullPaths: '/' | '/history' | '/game/$data' | '/new/{-$data}'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/history' | '/game/$data' | '/setup/{-$data}'
-  id: '__root__' | '/' | '/history' | '/game/$data' | '/setup/{-$data}'
+  to: '/' | '/history' | '/game/$data' | '/new/{-$data}'
+  id: '__root__' | '/' | '/history' | '/game/$data' | '/new/{-$data}'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HistoryRoute: typeof HistoryRoute
   GameDataRoute: typeof GameDataRoute
-  SetupChar123DataChar125Route: typeof SetupChar123DataChar125Route
+  NewChar123DataChar125Route: typeof NewChar123DataChar125Route
 }
 
 declare module '@tanstack/react-router' {
@@ -85,11 +85,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/setup/{-$data}': {
-      id: '/setup/{-$data}'
-      path: '/setup/{-$data}'
-      fullPath: '/setup/{-$data}'
-      preLoaderRoute: typeof SetupChar123DataChar125RouteImport
+    '/new/{-$data}': {
+      id: '/new/{-$data}'
+      path: '/new/{-$data}'
+      fullPath: '/new/{-$data}'
+      preLoaderRoute: typeof NewChar123DataChar125RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/game/$data': {
@@ -106,7 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HistoryRoute: HistoryRoute,
   GameDataRoute: GameDataRoute,
-  SetupChar123DataChar125Route: SetupChar123DataChar125Route,
+  NewChar123DataChar125Route: NewChar123DataChar125Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

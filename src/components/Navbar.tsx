@@ -32,7 +32,7 @@ export const Navbar: FC = () => {
 
 	const navItems = [
 		{ to: "/", label: "Sākums" },
-		{ to: "/setup", label: "Iestatījumi" },
+		{ to: "/new", label: "Jauna spēle" },
 		{ to: "/history", label: "Vēsture" },
 	];
 
@@ -57,7 +57,7 @@ export const Navbar: FC = () => {
 
 			{/* Mobile Menu Overlay */}
 			<div
-				className={`fixed inset-0 z-10 bg-gradient-to-br from-emerald-900/60 via-emerald-800/60 to-teal-900/60 backdrop-blur-sm transition-opacity duration-300 ${
+				className={`fixed inset-0 z-10 bg-gradient-to-br from-emerald-900/60 via-emerald-800/60 to-teal-900/60 backdrop-blur-xs transition-opacity duration-300 ${
 					isMenuOpen ? "opacity-100" : "pointer-events-none opacity-0"
 				}`}
 				onClick={() => setIsMenuOpen(false)}
@@ -69,7 +69,7 @@ export const Navbar: FC = () => {
 					isMenuOpen ? "translate-x-0" : "translate-x-full"
 				}`}
 			>
-				<div className="py-4">
+				<div className="py-2">
 					{navItems.map((item) => (
 						<Link
 							key={item.to}

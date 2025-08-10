@@ -7,7 +7,7 @@ const Component: FC = () => {
 	return (
 		<>
 			<Navbar />
-			<main className="pt-14">
+			<main className="mt-14 p-4">
 				<Outlet />
 			</main>
 			<TanStackRouterDevtools />

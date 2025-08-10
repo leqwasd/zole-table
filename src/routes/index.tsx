@@ -3,17 +3,6 @@ import { FC, ReactNode, useMemo } from "react";
 import { decompress } from "../utils";
 import { GameState } from "../types";
 
-// Reusable Home Page Components
-const HomePageLayout: FC<{ children: ReactNode }> = ({ children }) => (
-	<div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 p-4">
-		{/* Background decorative elements */}
-		<div className="absolute inset-0 bg-gradient-to-t from-emerald-800/30 to-transparent"></div>
-		<div className="absolute top-1/4 -right-32 h-96 w-96 rounded-full bg-emerald-400/10 blur-3xl"></div>
-		<div className="absolute bottom-1/4 -left-32 h-80 w-80 rounded-full bg-teal-400/10 blur-3xl"></div>
-		<div className="relative z-10 text-center">{children}</div>
-	</div>
-);
-
 const HomePrimaryButton: FC<{
 	children: ReactNode;
 	to: string;
@@ -142,14 +131,14 @@ const RecentGamesSection: FC = () => {
 
 const Index: FC = () => {
 	return (
-		<HomePageLayout>
+		<div className="relative flex flex-col items-center justify-center overflow-hidden">
 			<h1 className="mb-8 text-4xl font-bold text-white drop-shadow-lg">
 				Zolītes punktu tabula
 			</h1>
 
 			<div className="mb-8 space-y-4">
 				<HomePrimaryButton
-					to="/setup/{-$data}"
+					to="/new/{-$data}"
 					params={{ data: undefined }}
 				>
 					Jauna spēle
@@ -168,7 +157,7 @@ const Index: FC = () => {
 			</div>
 			{/* 
 			<RecentGamesSection /> */}
-		</HomePageLayout>
+		</div>
 	);
 };
 
